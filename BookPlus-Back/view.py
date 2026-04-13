@@ -38,7 +38,7 @@ def cadastro():
             return jsonify({"error":"Email já cadastrado"}), 400
         codigo = f"{random.randint(000000, 999999):06d}"
         senha_hash = encode_password(senha)
-        cur.execute("""insert into usuarios(nome, email, senha, codigo, tipo) values (?, ?, ?, ?, ?) RETURNING id_usuario""",
+        cur.execute("""insert into usuarios(nome, email, senha, codigo, tipo, tentativas) values (?, ?, ?, ?, ?, 0) RETURNING id_usuario""",
                     (nome, email, senha_hash, codigo, 1))
         id_usuario = cur.fetchone()[0]
         con.commit()
@@ -123,11 +123,12 @@ def login():
             return jsonify({'error': 'E-mail e senha são obrigatórios.'}), 400
 
         cursor.execute("""
-            SELECT senha, id_usuario, nome, situacao, tentativas, tipo, email, email_verificado
+            SELECT senha, id_usuario, nome, situacao, COALESCE(tentativas,0), tipo, email, email_verificado
             FROM usuarios
             WHERE email = ?
         """, (email,))
         usuario = cursor.fetchone()
+        print(usuario[4])
         if not usuario:
             return jsonify({'error': 'Usuário não encontrado.'}), 404
 
@@ -149,7 +150,7 @@ def login():
         if check_password_hash(senha_hash, senha):
             if tipo != 0:
                 cursor.execute("""
-                               UPDATE usuarios SET tentativas = 0 WHERE id_usuario = ?
+                               UPDATE usuarios SET COALESCE(tentativas,0) = 0 WHERE id_usuario = ?
                                """, (id_usuario,))
                 con.commit()
 
@@ -184,7 +185,7 @@ def login():
         if tentativas < 2 and tipo != 0:
             cursor.execute("""
                 UPDATE usuarios
-                SET tentativas = (tentativas + 1)
+                SET COALESCE(tentativas,0) = (COALESCE(tentativas,0) + 1)
                 WHERE id_usuario = ?
             """, (id_usuario,))
             con.commit()
@@ -193,7 +194,7 @@ def login():
         if tentativas == 2 and tipo != 0:
             cursor.execute("""
                 UPDATE usuarios
-                SET tentativas = 3, situacao = 1
+                SET COALESCE(tentativas,0) = 3, situacao = 1
                 WHERE id_usuario = ?
             """, (id_usuario,))
             con.commit()
