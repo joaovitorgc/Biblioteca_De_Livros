@@ -1,0 +1,88 @@
+.card {
+    background-color: #FFFFFF;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    width: 100%;
+    max-width: 220px;
+    font-family: 'Montserrat', sans-serif;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.imageContainer {
+    width: 100%;
+    height: 350px;
+    background-color: #F5F5F5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.capa {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.infoContainer {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.titulo {
+    color: #000000;
+    font-size: 14px;
+    font-weight: 800;
+    margin: 0 0 8px -14px;
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+}
+
+.autor {
+    color: #666666;
+    font-size: 12.9px;
+    font-weight: 500;
+    margin: 0 0 20px -14px;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.preco {
+    color: #00229E;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.botaoEmprestar {
+    background-color: var(--cor-botao);
+    font-family: 'Montserrat', sans-serif;
+    color: #FFFFFF;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-left: 68px;
+    transition: background-color 0.2s ease;
+}
+
+.botaoEmprestar:hover {
+    background-color: #4b92e8;
+}

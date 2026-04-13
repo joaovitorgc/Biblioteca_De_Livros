@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+.headerContainer {
+    background-color: var(--cor-primaria);
+    width: 100%;
+    padding: 6px 40px;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.logoContainer {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.logoTextDark {
+    color: #000000;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.logoTextBlue {
+    color: #00229E;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-right: 8px;
+}
+
+
+.bookIcon {
+    width: 28px;
+    height: 28px;
+}
+
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.navLink {
+    text-decoration: none;
+    color: #00229E;
+    font-size: 12.9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: opacity 0.2s ease;
+}
+
+.navLink:hover {
+    opacity: 0.7;
+}
+
+.loginButton {
+    background-color: #181818;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 12.9px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background-color 0.2s ease;
+}
+
+.loginButton:hover {
+    background-color: #FFFFFF;
+    color: black;
+}
