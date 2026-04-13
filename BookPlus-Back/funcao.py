@@ -33,8 +33,8 @@ def validar_senha(senha: str):
 
 def enviando_email(destinatario, assunto, mensagem):
     try:
-        user = "sophia.biliattoo@gmail.com"
-        senha = "eahu tqrv kaxi jsnb"
+        user = "joao.gaspar2808@gmail.com"
+        senha = "sjit kifr jeqn cndw"
 
         msg = MIMEText(mensagem)
         msg['Subject'] = assunto
@@ -58,8 +58,8 @@ def remove_bearer(token):
 
 
 # def enviando_email(destinatario, assunto, mensagem):
-#         user = "sophia.biliattoo@gmail.com"
-#         senha = "eahu tqrv kaxi jsnb"
+#         user = "joao.gaspar2808@gmail.com"
+#         senha = "sjit kifr jeqn cndw"
 #
 #         msg = MIMEText(mensagem)
 #         msg['Subject'] = assunto
