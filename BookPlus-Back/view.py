@@ -181,26 +181,6 @@ def login():
 
             return resp
 
-            # return jsonify({
-            #     'message': 'Login realizado com sucesso.',
-            #     'token': token,
-            #     'usuario': {
-            #         'id_usuario': id_usuario,
-            #         'nome': nome,
-            #         'email': email,
-            #         'tipo': tipo
-            #     }
-            # }), 200
-
-            # enviado = enviar_codigo(id_usuario, email)
-
-            # if not enviado:
-            #     return jsonify({'error': 'Erro ao enviar código'}), 500
-
-            # return jsonify({
-            #     'message': 'Código enviado para o email. Confirme para continuar.'
-            # }), 200
-
         if tentativas < 2 and tipo != 0:
             cursor.execute("""
                 UPDATE usuarios
