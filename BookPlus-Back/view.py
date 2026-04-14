@@ -39,7 +39,7 @@ def cadastro():
         codigo = f"{random.randint(000000, 999999):06d}"
         senha_hash = encode_password(senha)
         cur.execute("""insert into usuarios(nome, email, senha, codigo, tipo, tentativas) values (?, ?, ?, ?, ?, 0) RETURNING id_usuario""",
-                    (nome, email, senha_hash, codigo, 1))
+                    (nome, email, senha_hash, codigo, 1, 0))
         id_usuario = cur.fetchone()[0]
         con.commit()
 
@@ -150,7 +150,7 @@ def login():
         if check_password_hash(senha_hash, senha):
             if tipo != 0:
                 cursor.execute("""
-                               UPDATE usuarios SET COALESCE(tentativas,0) = 0 WHERE id_usuario = ?
+                               UPDATE usuarios SET tentativas = 0 WHERE id_usuario = ?
                                """, (id_usuario,))
                 con.commit()
 
@@ -185,7 +185,7 @@ def login():
         if tentativas < 2 and tipo != 0:
             cursor.execute("""
                 UPDATE usuarios
-                SET COALESCE(tentativas,0) = (COALESCE(tentativas,0) + 1)
+                SET tentativas = COALESCE(tentativas, 0) + 1
                 WHERE id_usuario = ?
             """, (id_usuario,))
             con.commit()
@@ -194,7 +194,7 @@ def login():
         if tentativas == 2 and tipo != 0:
             cursor.execute("""
                 UPDATE usuarios
-                SET COALESCE(tentativas,0) = 3, situacao = 1
+                SET tentativas = 3, situacao = 1
                 WHERE id_usuario = ?
             """, (id_usuario,))
             con.commit()
@@ -205,6 +205,7 @@ def login():
         return jsonify({'error': 'E-mail ou senha incorretos. Tente novamente.'}), 401
 
     except Exception as e:
+        print(str(e))
         return jsonify({'error': f'Erro ao realizar login.'}), 500
 
     finally:
