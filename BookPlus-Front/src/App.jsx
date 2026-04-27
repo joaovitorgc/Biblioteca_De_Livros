@@ -1,21 +1,21 @@
 import Header from "./components/Header/Header.jsx";
-import CardLivro from "./components/Card/CardLivro.jsx";
-import Banner from "./components/Banner/Banner.jsx";
+import Home from "./pages/Home.jsx";
+import {BrowserRouter, Routes, Route} from "react-router-dom"
+import Footer from "./components/Footer/Footer.jsx";
 function App() {
 
+
+
     return (
-        <>
-        <Header />
+        <BrowserRouter>
 
-            <Banner />
+            <Header />
+            <Routes>
+                <Route path="/" element={ <Home/> } />
+            </Routes>
+            <Footer/>
 
-            <CardLivro
-                imagem="/oPrincipe.jpg"
-                titulo="O Príncipe"
-                autor="Nicolau Maquiável"
-            />
-
-        </>
+        </BrowserRouter>
     )
 }
 

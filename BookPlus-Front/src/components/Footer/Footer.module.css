@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+.footerContainer {
+    background-color: var(--cor-primaria);
+    width: 100%;
+    height: 190px;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+    margin-top: 65px;
+
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 20px;
+}
+
+.logoContainer {
+    position: absolute;
+    left: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.logoTextDark {
+    color: #000000;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.logoTextBlue {
+    color: #00229E;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-right: 8px;
+}
+
+.bookIcon {
+    width: 38px;
+    height: 38px;
+}
+
+.texto {
+    font-family: 'Montserrat', sans-serif;
+    color: black;
+    font-weight: 700;
+    font-size: 14px;
+    margin: 0;
+}

@@ -73,6 +73,7 @@
     font-weight: 700;
     cursor: pointer;
     letter-spacing: 0.5px;
+    text-decoration: none;
     transition: background-color 0.2s ease;
 }
 

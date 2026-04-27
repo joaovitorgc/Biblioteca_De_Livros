@@ -1,5 +1,6 @@
 import React from 'react';
 import estilo from './Header.module.css';
+import { Link } from "react-router-dom";
 
 export default function Header() {
     return (
@@ -17,10 +18,9 @@ export default function Header() {
                 </div>
 
                 <nav className={estilo.nav}>
-                    <a href="/public" className={estilo.navLink}>HOME</a>
-                    <a href="/cadastro" className={estilo.navLink}>CADASTRE-SE</a>
-                    <button className={estilo.loginButton}>ENTRAR</button>
-                </nav>
+                    <Link className={estilo.navLink} to={"/"}>HOME</Link>
+                    <Link className={estilo.navLink} to={"/cadastro"}>CADASTRE-SE</Link>
+                    <Link className={estilo.loginButton} to="/Login">LOGIN</Link>                </nav>
             </header>
         </div>
     );
