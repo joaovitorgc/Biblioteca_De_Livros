@@ -5,27 +5,40 @@ import css from "./Banner.module.css";
 const series = [
     {
         id: 1,
-        imagem: "/got.webp",
+        imagem: "/got_cut.jpg",
         tag: "FANTASIA",
-        titulo: <>Descubra seu <br /> próximo capítulo</>,
+        titulo: <> "O inverno <br /> está chegando"</>,
         corGradiente: "rgb(54,84,110)",
         imagem_livro: "got_livro.jpg",
         livro_nome: "logo_game_of_thrones.png"
     },
-    // {
-    //     id: 2,
-    //     imagem: "/twd.webp",
-    //     tag: "APOCALIPSE",
-    //     titulo: <>O Fim <br /> Chegou</>,
-    //     corGradiente: "rgba(27,88,67,0.9)"
-    // },
-    // {
-    //     id: 3,
-    //     imagem: "/st.jpg",
-    //     tag: "FICÇÃO CIENTÍFICA",
-    //     titulo: <>Mundo <br /> Invertido</>,
-    //     corGradiente: "rgba(183, 28, 28, 0.9)"
-    // }
+    {
+        id: 2,
+        imagem: "/jogos.jpg",
+        tag: "AÇÃO",
+        titulo: <>"Que a sorte esteja  <br /> sempre a seu favor"</>,
+        corGradiente: "rgb(83,22,22)",
+        imagem_livro: "jogos-vorazes-livro.jpg",
+        livro_nome: "jogos-vorazes-logo.webp"
+    },
+    {
+        id: 3,
+        imagem: "/Poderoso_chefao.jpg",
+        tag: "MÁFIA",
+        titulo: <>"Não é pessoal, <br /> são apenas negócios"</>,
+        corGradiente: "rgba(183, 28, 28, 0.9)",
+        imagem_livro: "Poderoso_chefao_livro.jpg",
+        livro_nome: "Poderoso_chefao_titulo.jpg"
+    },
+    {
+        id: 4,
+        imagem: "/it.jpg",
+        tag: "TERROR",
+        titulo: <>"Você também  <br /> vai flutuar"</>,
+        corGradiente: "rgb(186,24,37)",
+        imagem_livro: "it-livro.jpg",
+        livro_nome: "it-titulo.png"
+    }
 ];
 
 export default function Banner() {
