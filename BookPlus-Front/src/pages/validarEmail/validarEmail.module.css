@@ -5,12 +5,12 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: #0f172a;
+    background: #000000;
     font-family: 'Montserrat', sans-serif;
 }
 
 .caixa {
-    background: #1e293b;
+    background: #ffffff;
     padding: 40px;
     border-radius: 12px;
     text-align: center;
@@ -18,58 +18,70 @@
 }
 
 .caixa h1 {
-    color: white;
+    color: #000000;
     margin-bottom: 10px;
 }
 
 .subtitulo {
-    color: #94a3b8;
+    color: #808080;
     font-size: 14px;
     margin-bottom: 25px;
 }
 
 .inputs {
     display: flex;
-    gap: 8px; /* 👈 espaçamento */
+    gap: 8px;
     justify-content: center;
     margin-bottom: 25px;
 }
 
 .input {
-    width: 55px;   /* 👈 maior */
-    height: 65px;  /* 👈 maior */
+    width: 55px;
+    height: 65px;
     text-align: center;
-    font-size: 24px;
+    font-size: 26px;
     border-radius: 10px;
     border: 2px solid transparent;
-    background: #0f172a;
-    color: white;
+    background: #cccccc;
+    color: #000000;
     transition: 0.2s;
+    font-weight: 600;
 }
 
 .input:focus {
-    border-color: #3b82f6;
+    border-color: #3b9eff82;
     outline: none;
 }
 
 .botao {
     width: 100%;
     padding: 12px;
-    background: #475569; /* 👈 cinza */
+    background: #c0c0c0;
     border: none;
     color: white;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    transition: 0.2s;
+    transition:ease-in-out 0.21s;
 }
 
 .botaoAtivo {
-    background: #3b82f6;
+    background: #3b9eff;
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
 }
 
-.mensagem {
+.botaoAtivo:hover {
+    transform: translateY(-1px);
+}
+
+.erro {
     margin-top: 15px;
-    color: #49c80e;
+    color: #ef4444;
+    font-size: 14px;
+}
+
+.sucesso {
+    margin-top: 15px;
+    color: #22c55e;
     font-size: 14px;
 }

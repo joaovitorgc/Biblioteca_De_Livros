@@ -1,10 +1,14 @@
 import { useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import css from "./validarEmail.module.css";
+import FlashMessage from "../../components/FlashMessage/FlashMessage.jsx";
 
 export default function ValidarEmail() {
     const [codigo, setCodigo] = useState(["", "", "", "", "", ""]);
     const [mensagem, setMensagem] = useState("");
+    const [tipoMensagem, setTipoMensagem] = useState("");
+    const navigate = useNavigate();
+
     const codigoCompleto = codigo.every((n) => n !== "");
 
     const inputsRef = useRef([]);
@@ -49,47 +53,62 @@ export default function ValidarEmail() {
             const dados = await resposta.json();
 
             if (resposta.ok) {
-                setMensagem("Email validado com sucesso!");
+                setMensagem("Validado com sucesso!");
+                setTipoMensagem("sucesso");
+
+                setTimeout(() => {
+                    navigate("/Login");
+                }, 1000);
+
             } else {
                 setMensagem(dados.error);
+                setTipoMensagem("erro");
             }
 
         } catch {
             setMensagem("Erro ao conectar com a API");
+            setTipoMensagem("erro");
         }
     }
 
     return (
-        <div className={css.container}>
-            <form className={css.caixa} onSubmit={verificarCodigo}>
-                <h1>Verificação de Email</h1>
-                <p className={css.subtitulo}>
-                    Digite o código de 6 dígitos enviado para seu email
-                </p>
+        <>
+            <FlashMessage
+                mensagem={mensagem}
+                tipo={tipoMensagem}
+                onClose={() => setMensagem("")}
+            />
 
-                <div className={css.inputs}>
-                    {codigo.map((num, index) => (
-                        <input
-                            key={index}
-                            type="text"
-                            maxLength="1"
-                            value={num}
-                            onChange={(e) => handleChange(e.target.value, index)}
-                            onKeyDown={(e) => handleKeyDown(e, index)}
-                            ref={(el) => (inputsRef.current[index] = el)}
-                            className={css.input}
-                        />
-                    ))}
-                </div>
+            <div className={css.container}>
+                <form className={css.caixa} onSubmit={verificarCodigo}>
+                    <h1>Verificação de Email</h1>
+                    <p className={css.subtitulo}>
+                        Digite o código de 6 dígitos enviado para seu email
+                    </p>
 
-                <button
-                    type="submit"
-                    className={`${css.botao} ${codigoCompleto ? css.botaoAtivo : ""}`}>
-                    VALIDAR
-                </button>
+                    <div className={css.inputs}>
+                        {codigo.map((num, index) => (
+                            <input
+                                key={index}
+                                type="text"
+                                maxLength="1"
+                                value={num}
+                                onChange={(e) => handleChange(e.target.value, index)}
+                                onKeyDown={(e) => handleKeyDown(e, index)}
+                                ref={(el) => (inputsRef.current[index] = el)}
+                                className={css.input}
+                            />
+                        ))}
+                    </div>
 
-                {mensagem && <p className={css.mensagem}>{mensagem}</p>}
-            </form>
-        </div>
+                    <button
+                        type="submit"
+                        className={`${css.botao} ${codigoCompleto ? css.botaoAtivo : ""}`}
+                    >
+                        VALIDAR
+                    </button>
+                </form>
+            </div>
+        </>
     );
 }
