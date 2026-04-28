@@ -1,0 +1,163 @@
+.containerPrincipal {
+    display: flex;
+    width: 100%;
+    min-height: calc(100vh - 150px);
+    background-color: #000000;
+}
+
+.painelEsquerdo {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.painelDireito {
+    width: 35%;
+    min-width: 300px;
+    max-width: 450px;
+    display: flex;
+}
+
+.imagemLivro {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: brightness(0.5);
+}
+
+.cartaoLogin {
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 3rem 4rem;
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.titulo {
+    color: #1a3c8a;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.formulario {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.grupoEntrada {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.grupoEntrada label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #000000;
+    font-size: 1rem;
+}
+
+.grupoEntrada input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    background-color: #eeeeee;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: background-color 0.2s ease;
+}
+
+.grupoEntrada input:focus {
+    background-color: #e0e0e0;
+}
+
+.esqueceuSenha {
+    align-self: flex-start;
+    font-size: 0.75rem;
+    margin-bottom: 1.5rem;
+    color: #000000;
+}
+
+.esqueceuSenha a {
+    color: #1a3c8a;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.esqueceuSenha a:hover {
+    color: black;
+}
+
+.botaoEntrar {
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 60%;
+    margin-bottom: 1.5rem;
+    transition: background-color 0.2s ease;
+}
+
+.botaoEntrar:hover {
+    background-color: var(--cor-botao);
+    transition: ease-in-out 0.25s;
+}
+
+.secaoCadastro {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.secaoCadastro p {
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #000000;
+}
+
+.botaoCadastrar {
+    background-color: var(--cor-botao);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 60%;
+    transition: background-color 0.2s ease;
+}
+
+.botaoCadastrar:hover {
+    background-color: #000000;
+    transition: ease-in-out 0.25s;
+}
+
+@media (max-width: 768px) {
+    .painelDireito {
+        display: none;
+    }
+
+    .cartaoLogin {
+        padding: 2rem;
+    }
+}
