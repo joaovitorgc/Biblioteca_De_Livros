@@ -99,7 +99,7 @@ export default function Cadastro() {
 
                                     <input
                                         type="file"
-                                        name="foto"
+                                        name="imagem"
                                         accept="image/*"
                                         onChange={handleFotoChange}
                                         className={css.inputFile}

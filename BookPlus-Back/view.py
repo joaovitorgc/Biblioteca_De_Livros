@@ -1,7 +1,7 @@
 import datetime
 import random
 
-from flask import Flask, jsonify, request, make_response
+from flask import Flask, jsonify, request, make_response, send_from_directory
 import threading
 import os.path
 
@@ -328,3 +328,7 @@ def deletar_usuario(id):
     except Exception as e:
         con.rollback()
         return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/uploads/<path:filename>')
+def uploaded_file(filename):
+    return send_from_directory('uploads', filename)
