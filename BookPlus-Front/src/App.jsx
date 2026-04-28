@@ -4,6 +4,7 @@ import {BrowserRouter, Routes, Route} from "react-router-dom"
 import Footer from "./components/Footer/Footer.jsx";
 import Login from "./pages/Login/Login.jsx";
 import Cadastro from "./pages/Cadastro/Cadastro.jsx";
+import ValidarEmail from "./pages/validarEmail/validarEmail.jsx";
 function App() {
 
 
@@ -16,6 +17,7 @@ function App() {
                 <Route path="/" element={ <Home/> } />
                 <Route path="/Login" element={ <Login/> } />
                 <Route path="/cadastro" element={ <Cadastro/> } />
+                <Route path="/ValidarEmail" element={ <ValidarEmail/> } />
             </Routes>
             <Footer/>
 
