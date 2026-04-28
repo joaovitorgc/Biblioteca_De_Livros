@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import css from "./Cadastro.module.css";
-import { Link } from "react-router-dom";
 
 export default function Cadastro() {
     const [foto, setFoto] = useState(null);
+    const navigate = useNavigate();
 
     function handleFotoChange(e) {
         const file = e.target.files[0];
@@ -24,11 +25,12 @@ export default function Cadastro() {
                 body: formData
             });
 
-            const dados = await resposta.json();
-
             if (resposta.ok) {
-                console.log("SUCESSO");
+                navigate("/ValidarEmail", {
+                    state: { email: formData.get("email") }
+                });
             } else {
+                const dados = await resposta.json();
                 console.log(dados.error || dados.message);
             }
 
