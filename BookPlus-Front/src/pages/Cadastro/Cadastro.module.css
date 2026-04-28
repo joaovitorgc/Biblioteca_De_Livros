@@ -1,0 +1,162 @@
+.containerPrincipal {
+    display: flex;
+    width: 100%;
+    min-height: calc(100vh - 150px);
+    background-color: #000000;
+    flex-direction: row-reverse;
+}
+
+.painelEsquerdo {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.painelDireito {
+    width: 35%;
+    min-width: 300px;
+    max-width: 450px;
+    display: flex;
+}
+
+.imagemLivro {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.5);
+}
+
+/* CARD */
+.cartaoCadastro {
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 3rem 4rem;
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.titulo {
+    color: #1a3c8a;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+
+.formulario {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.grupoEntrada {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.grupoEntrada label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #000000;
+    font-size: 1rem;
+}
+
+.grupoEntrada input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    background-color: #eeeeee;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: background-color 0.2s ease;
+}
+
+.grupoEntrada input:focus {
+    background-color: #e0e0e0;
+}
+
+/* INPUT FILE */
+.inputFile {
+    padding: 0.5rem;
+    background-color: #eeeeee;
+    border-radius: 8px;
+}
+
+.botaoAvancar {
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 60%;
+    margin-top: 1rem;
+    transition: background-color 0.2s ease;
+
+    display: block;
+    text-align: center;
+    text-decoration: none;
+}
+
+.botaoAvancar:hover {
+    background-color: var(--cor-botao);
+}
+
+
+.loginLink {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #000000;
+}
+
+.loginLink a {
+    color: #1a3c8a;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.loginLink a:hover {
+    color: #000000;
+}
+
+.caixaFoto {
+    width: 120px;
+    height: 120px;
+    background-color: #eeeeee;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    transition: background-color 0.2s;
+}
+
+.caixaFoto:hover {
+    background-color: #e0e0e0;
+}
+
+.previewFoto {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.inputFile {
+    display: none;
+}
+
+
