@@ -145,11 +145,21 @@
     cursor: pointer;
     width: 60%;
     transition: background-color 0.2s ease;
+
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    text-decoration: none;
 }
 
 .botaoCadastrar:hover {
     background-color: #000000;
     transition: ease-in-out 0.25s;
+}
+
+.a {
+    text-decoration: none;
+    color: white;
 }
 
 @media (max-width: 768px) {

@@ -1,5 +1,6 @@
 import React from 'react';
 import estilos from './Login.module.css';
+import {Link} from "react-router-dom";
 
 export default function Login(){
     return (
@@ -31,9 +32,9 @@ export default function Login(){
 
                     <div className={estilos.secaoCadastro}>
                         <p>Ainda não possui Cadastro?</p>
-                        <button type="button" className={estilos.botaoCadastrar}>
+                        <Link to={"/cadastro"} className={estilos.botaoCadastrar}>
                             CADASTRE-SE
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </section>
