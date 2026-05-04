@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 
 export default function Header() {
     const navigate = useNavigate();
-
     const [usuario, setUsuario] = useState(null);
 
     useEffect(() => {
@@ -13,38 +12,27 @@ export default function Header() {
             setUsuario(user);
         };
 
-        carregarUsuario(); // inicial
+        carregarUsuario(); // Carregamento inicial
 
+        // Agrupando todos os listeners no mesmo useEffect
         window.addEventListener("userChanged", carregarUsuario);
+        window.addEventListener("storage", carregarUsuario);
 
         return () => {
             window.removeEventListener("userChanged", carregarUsuario);
-        };
-    }, []);
-
-    useEffect(() => {
-        const user = JSON.parse(localStorage.getItem("usuario"));
-        setUsuario(user);
-    }, []);
-
-    useEffect(() => {
-        const atualizarUsuario = () => {
-            const user = JSON.parse(localStorage.getItem("usuario"));
-            setUsuario(user);
-        };
-
-        window.addEventListener("storage", atualizarUsuario);
-
-        return () => {
-            window.removeEventListener("storage", atualizarUsuario);
+            window.removeEventListener("storage", carregarUsuario);
         };
     }, []);
 
     async function logout() {
-        await fetch("http://localhost:5000/logout", {
-            method: "POST",
-            credentials: "include"
-        });
+        try {
+            await fetch("http://localhost:5000/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+        } catch (error) {
+            console.error("Erro ao fazer logout:", error);
+        }
 
         localStorage.removeItem("usuario");
         window.dispatchEvent(new Event("userChanged"));
@@ -58,7 +46,7 @@ export default function Header() {
                 <div className={estilo.logoContainer}>
                     <span className={estilo.logoTextDark}>BOOK</span>
                     <span className={estilo.logoTextBlue}>PLUS</span>
-                    <img src={"iconeLogo.png"} className={estilo.bookIcon} />
+                    <img src="/iconeLogo.png" alt="Logo" className={estilo.bookIcon} />
                 </div>
 
                 <nav className={estilo.nav}>
@@ -80,6 +68,7 @@ export default function Header() {
                                 alt="perfil"
                                 className={estilo.avatar}
                                 onError={(e) => {
+                                    e.target.onerror = null; // Evita loop infinito caso a imagem de fallback também falhe
                                     e.target.src = "/icone_foto.png";
                                 }}
                             />
@@ -87,7 +76,7 @@ export default function Header() {
                             <span className={estilo.nome}>{usuario.nome}</span>
 
                             <button className={estilo.logout} onClick={logout}>
-                                <img src="/" alt="Sair" className={estilo.icon} />
+                                <img src="/sair.png" alt="Sair" className={estilo.icon} />
                                 Sair
                             </button>
                         </div>

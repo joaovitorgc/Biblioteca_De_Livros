@@ -39,7 +39,7 @@ export default function Login() {
 
                 setTimeout(() => {
                     navigate("/dashboard");
-                }, 1500);
+                }, 1000);
 
             } else {
                 setMensagem(dados.error);

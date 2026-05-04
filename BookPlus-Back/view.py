@@ -45,7 +45,7 @@ def cadastro():
 
         if imagem:
             nome_imagem = f"{id_usuario}.jpg"
-            caminho_imagem_destino = os.path.join(app.config['UPLOAD_FOLDER'], "Usuarios")
+            caminho_imagem_destino = os.path.join(app.config['UPLOAD_FOLDER'], "uploads/Usuarios")
             os.makedirs(caminho_imagem_destino, exist_ok=True)
             caminho_imagem = os.path.join(caminho_imagem_destino, nome_imagem)
             imagem.save(caminho_imagem)
@@ -276,7 +276,7 @@ def editar_usuario(id):
 
         if imagem:
             nome_imagem = f"{id}.jpg"
-            caminho_imagem_destino = os.path.join(app.config['UPLOAD_FOLDER'], "Usuarios")
+            caminho_imagem_destino = os.path.join(app.config['UPLOAD_FOLDER'], "uploads/Usuarios")
             os.makedirs(caminho_imagem_destino, exist_ok=True)
             caminho_imagem = os.path.join(caminho_imagem_destino, nome_imagem)
             imagem.save(caminho_imagem)
