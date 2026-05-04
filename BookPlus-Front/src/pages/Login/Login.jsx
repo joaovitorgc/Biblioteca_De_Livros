@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import estilos from './Login.module.css';
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import FlashMessage from "../../components/FlashMessage/FlashMessage.jsx";
 
 export default function Login() {
@@ -8,6 +8,19 @@ export default function Login() {
     const [tipo, setTipo] = useState("");
 
     const navigate = useNavigate();
+    // --- Variável location criada ---
+    const location = useLocation();
+
+    // --- useEffect lendo a mensagem que veio do Header ---
+    useEffect(() => {
+        if (location.state?.mensagemLogout) {
+            setMensagem(location.state.mensagemLogout);
+            setTipo(location.state.tipo);
+
+            // Limpa a rota para não exibir a mensagem novamente se o usuário der F5
+            window.history.replaceState({}, document.title);
+        }
+    }, [location]);
 
     async function fazerLogin(e) {
         e.preventDefault();

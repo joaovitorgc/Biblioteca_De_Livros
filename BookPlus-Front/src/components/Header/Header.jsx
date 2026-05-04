@@ -37,7 +37,9 @@ export default function Header() {
         localStorage.removeItem("usuario");
         window.dispatchEvent(new Event("userChanged"));
         setUsuario(null);
-        navigate("/login");
+
+        // Mandando a mensagem oculta para a página de login
+        navigate("/login", { state: { mensagemLogout: "Logout realizado com sucesso!", tipo: "sucesso" } });
     }
 
     return (

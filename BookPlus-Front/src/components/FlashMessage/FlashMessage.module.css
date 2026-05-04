@@ -15,7 +15,7 @@
 }
 
 .success {
-    background-color: #28a745;
+    background-color: rgba(40, 167, 69, 0.69);
 }
 
 @keyframes slideDown {
