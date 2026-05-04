@@ -88,6 +88,18 @@ export default function Banner() {
                 </section>
             ))}
 
+            {/* Renderiza as "bolinhas" de navegação */}
+            <div className={css.dotsContainer}>
+                {series.map((_, index) => (
+                    <button
+                        key={index}
+                        className={`${css.dot} ${index === indiceAtual ? css.activeDot : ''}`}
+                        onClick={() => setIndiceAtual(index)}
+                        aria-label={`Ir para o slide ${index + 1}`}
+                    ></button>
+                ))}
+            </div>
+
         </div>
     );
 }

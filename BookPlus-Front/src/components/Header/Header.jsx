@@ -5,6 +5,10 @@ import { Link, useNavigate } from "react-router-dom";
 export default function Header() {
     const navigate = useNavigate();
     const [usuario, setUsuario] = useState(null);
+    const [menuAberto, setMenuAberto] = useState(false); // Estado do menu mobile
+
+    const toggleMenu = () => setMenuAberto(!menuAberto);
+    const fecharMenu = () => setMenuAberto(false);
 
     useEffect(() => {
         const carregarUsuario = () => {
@@ -37,6 +41,7 @@ export default function Header() {
         localStorage.removeItem("usuario");
         window.dispatchEvent(new Event("userChanged"));
         setUsuario(null);
+        fecharMenu(); // Fecha o menu ao sair
 
         // Mandando a mensagem oculta para a página de login
         navigate("/login", { state: { mensagemLogout: "Logout realizado com sucesso!", tipo: "sucesso" } });
@@ -48,18 +53,30 @@ export default function Header() {
                 <div className={estilo.logoContainer}>
                     <span className={estilo.logoTextDark}>BOOK</span>
                     <span className={estilo.logoTextBlue}>PLUS</span>
-                    <Link to={"/"}><img src="/iconeLogo.png" alt="Logo" className={estilo.bookIcon} /></Link>
+                    <Link to={"/"} onClick={fecharMenu}><img src="/iconeLogo.png" alt="Logo" className={estilo.bookIcon} /></Link>
                 </div>
 
-                <nav className={estilo.nav}>
-                    <Link className={estilo.navLink} to="/">HOME</Link>
+                {/* Botão Hambúrguer (Aparece apenas no mobile) */}
+                <button
+                    className={`${estilo.hamburger} ${menuAberto ? estilo.ativo : ''}`}
+                    onClick={toggleMenu}
+                    aria-label="Menu"
+                >
+                    <span className={estilo.linha}></span>
+                    <span className={estilo.linha}></span>
+                    <span className={estilo.linha}></span>
+                </button>
+
+                {/* Menu de Navegação */}
+                <nav className={`${estilo.nav} ${menuAberto ? estilo.navAberta : ''}`}>
+                    <Link className={estilo.navLink} to="/" onClick={fecharMenu}>HOME</Link>
 
                     {!usuario ? (
                         <>
-                            <Link className={estilo.navLink} to="/cadastro">
+                            <Link className={estilo.navLink} to="/cadastro" onClick={fecharMenu}>
                                 CADASTRE-SE
                             </Link>
-                            <Link className={estilo.loginButton} to="/login">
+                            <Link className={estilo.loginButton} to="/login" onClick={fecharMenu}>
                                 LOGIN
                             </Link>
                         </>
@@ -70,7 +87,7 @@ export default function Header() {
                                 alt="perfil"
                                 className={estilo.avatar}
                                 onError={(e) => {
-                                    e.target.onerror = null; // Evita loop infinito caso a imagem de fallback também falhe
+                                    e.target.onerror = null;
                                     e.target.src = "/icone_foto.png";
                                 }}
                             />
