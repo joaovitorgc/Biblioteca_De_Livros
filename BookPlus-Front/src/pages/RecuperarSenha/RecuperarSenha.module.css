@@ -1,0 +1,126 @@
+.containerFundo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #000000;
+}
+
+.cartaoBranco {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 500px;
+    padding: 50px 40px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.formulario {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.titulo {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 30px;
+}
+
+.subtitulo {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.grupoInput {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+    font-family: sans-serif;
+}
+
+.inputTexto {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: #e8e8e8;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: background-color 0.2s ease;
+}
+
+.inputTexto:focus {
+    background-color: #e0e0e0;
+}
+
+.containerCodigo {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 35px;
+    width: 100%;
+}
+
+.inputCaixinha {
+    width: 55px;
+    height: 65px;
+    text-align: center;
+    font-size: 26px;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background: #cccccc;
+    color: #000000;
+    transition: 0.2s;
+    font-weight: 600;
+}
+
+.inputCaixinha:focus {
+    border-color: #3b9eff82;
+    outline: none;
+}
+
+.inputCaixinha:focus {
+    background-color: #dcdcdc;
+}
+
+.botaoPreto {
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 30px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 30px;
+    transition: transform 0.1s ease, background-color 0.2s ease;
+}
+
+.botaoPreto:hover {
+    background-color: #222222;
+}
+
+.botaoPreto:active {
+    transform: scale(0.97);
+}
+
+.botaoPreto:disabled {
+    background-color: #666666;
+    cursor: not-allowed;
+}

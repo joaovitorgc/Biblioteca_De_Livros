@@ -6,6 +6,7 @@ import Login from "./pages/Login/Login.jsx";
 import Cadastro from "./pages/Cadastro/Cadastro.jsx";
 import ValidarEmail from "./pages/validarEmail/validarEmail.jsx";
 import Dashboard from "./pages/Dashboard/Dashboard.jsx";
+import RecuperarSenha from "./pages/RecuperarSenha/RecuperarSenha.jsx";
 function App() {
 
 
@@ -20,6 +21,7 @@ function App() {
                 <Route path="/cadastro" element={ <Cadastro/> } />
                 <Route path="/ValidarEmail" element={ <ValidarEmail/> } />
                 <Route path="/Dashboard" element={ <Dashboard/> } />
+                <Route path="/RecuperarSenha" element={ <RecuperarSenha/> } />
             </Routes>
             <Footer/>
 

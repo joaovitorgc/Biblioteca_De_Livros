@@ -78,7 +78,7 @@ export default function Login() {
 
                             <div className={estilos.esqueceuSenha}>
                                 <span>Esqueci minha Senha? </span>
-                                <a href="#redefinir">Redefinir</a>
+                                <Link to={"/RecuperarSenha"} className={estilos.link}>Redefinir</Link>
                             </div>
 
                             <button type="submit" className={estilos.botaoEntrar}>

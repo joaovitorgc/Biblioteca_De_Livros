@@ -46,7 +46,7 @@ export default function Header() {
                 <div className={estilo.logoContainer}>
                     <span className={estilo.logoTextDark}>BOOK</span>
                     <span className={estilo.logoTextBlue}>PLUS</span>
-                    <img src="/iconeLogo.png" alt="Logo" className={estilo.bookIcon} />
+                    <Link to={"/"}><img src="/iconeLogo.png" alt="Logo" className={estilo.bookIcon} /></Link>
                 </div>
 
                 <nav className={estilo.nav}>

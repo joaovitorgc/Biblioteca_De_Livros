@@ -1,5 +1,6 @@
 import datetime
 import random
+import secrets
 
 from flask import Flask, jsonify, request, make_response, send_from_directory
 import threading
@@ -332,3 +333,105 @@ def deletar_usuario(id):
 @app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
     return send_from_directory('uploads', filename)
+
+@app.route('/recuperar_senha', methods=['POST'])
+def recuperar_senha():
+    cur = con.cursor()
+    try:
+        dados = request.get_json(silent=True) or {}
+
+        email = (dados.get('email') or '').strip().lower()
+        codigo = dados.get('codigo')
+        nova_senha = dados.get('nova_senha')
+
+        if not email:
+            return jsonify({'error': 'Email é obrigatório'}), 400
+
+        if not codigo and not nova_senha:
+            cur.execute("""
+                SELECT id_usuario
+                FROM usuarios
+                WHERE email = ?
+            """, (email,))
+            if not cur.fetchone():
+                return jsonify({'error': 'Usuário não encontrado'}), 404
+
+            codigo = f"{secrets.randbelow(1000000):06d}"
+
+            cur.execute("""
+                UPDATE usuarios
+                SET codigo = ?
+                WHERE email = ?
+            """, (codigo, email))
+            con.commit()
+
+            threading.Thread(
+                target=enviando_email,
+                args=(email, "Recuperação de senha", f"Código: {codigo}"),
+                daemon=True
+            ).start()
+
+            return jsonify({"mensagem": "Código enviado"}), 200
+
+        if codigo and nova_senha:
+            cur.execute("""
+                SELECT id_usuario, senha, senha_um, senha_dois, senha_tres, codigo
+                FROM usuarios
+                WHERE email = ?
+            """, (email,))
+            usuario = cur.fetchone()
+
+            if not usuario:
+                return jsonify({'error': 'Usuário não encontrado'}), 404
+
+            id_usuario = usuario[0]
+            senha_atual = usuario[1]
+            senha_um = usuario[2]
+            senha_dois = usuario[3]
+            senha_tres = usuario[4]
+            codigo_banco = usuario[5]
+
+            if str(codigo_banco) != str(codigo):
+                return jsonify({'error': 'Código inválido'}), 400
+
+            if not validar_senha(nova_senha):
+                return jsonify({"error": "A senha não segue nossos padrões de segurança"}), 400
+
+            historico = [senha_atual, senha_um, senha_dois, senha_tres]
+            for senha_hash in historico:
+                if not senha_hash:
+                    continue
+                try:
+                    if check_password_hash(senha_hash, nova_senha):
+                        return jsonify({"error": "Não é permitido reutilizar as últimas 3 senhas"}), 400
+                except ValueError:
+                    continue
+
+            nova_hash = generate_password_hash(nova_senha)
+
+            cur.execute("""
+                UPDATE usuarios
+                SET senha = ?,
+                    senha_um = ?,
+                    senha_dois = ?,
+                    senha_tres = ?,
+                    codigo = NULL
+                WHERE id_usuario = ?
+            """, (
+                nova_hash,
+                nova_hash,
+                senha_um,
+                senha_dois,
+                id_usuario
+            ))
+            con.commit()
+
+            return jsonify({"mensagem": "Senha redefinida com sucesso"}), 200
+
+        return jsonify({'error': 'Dados inválidos'}), 400
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+    finally:
+        cur.close()

@@ -108,7 +108,7 @@
 .nome {
     font-weight: 600;
     font-size: 0.95rem;
-    color: #f1f5f9;
+    color: #333;
     max-width: 140px;
     white-space: nowrap;
     overflow: hidden;
@@ -151,4 +151,8 @@
     height: 16px;
     object-fit: contain;
     transition: 0.3s;
+}
+
+.logout:hover .icon {
+    filter: invert(1);
 }
