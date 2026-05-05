@@ -347,6 +347,7 @@ def recuperar_senha():
         if not email:
             return jsonify({'error': 'Email é obrigatório'}), 400
 
+        # --- ETAPA 1: Enviar o código para o email (tem email, mas não tem código nem senha) ---
         if not codigo and not nova_senha:
             cur.execute("""
                 SELECT id_usuario
@@ -373,6 +374,26 @@ def recuperar_senha():
 
             return jsonify({"mensagem": "Código enviado"}), 200
 
+        # --- ETAPA 2 (NOVA): Verificar apenas o código (tem email e código, mas não tem senha) ---
+        if codigo and not nova_senha:
+            cur.execute("""
+                SELECT codigo
+                FROM usuarios
+                WHERE email = ?
+            """, (email,))
+            usuario = cur.fetchone()
+
+            if not usuario:
+                return jsonify({'error': 'Usuário não encontrado'}), 404
+
+            codigo_banco = usuario[0]
+
+            if str(codigo_banco) != str(codigo):
+                return jsonify({'error': 'Código inválido'}), 400
+
+            return jsonify({"mensagem": "Código correto"}), 200
+
+        # --- ETAPA 3: Redefinir a senha final (tem email, código e a nova senha) ---
         if codigo and nova_senha:
             cur.execute("""
                 SELECT id_usuario, senha, senha_um, senha_dois, senha_tres, codigo

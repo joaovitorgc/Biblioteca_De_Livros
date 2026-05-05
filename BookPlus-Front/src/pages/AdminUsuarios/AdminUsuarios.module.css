@@ -1,0 +1,62 @@
+.containerGeral {
+    font-family: 'Montserrat', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+}
+
+.conteudoPrincipal {
+    flex: 1;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.tituloPagina {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 30px;
+    color: #000000;
+}
+
+.gradeEstatisticas {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.cabecalhoLista {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+}
+
+.botaoNovo {
+    background-color: var(--cor-botao);
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+
+.botaoNovo:hover {
+    filter: brightness(0.9);
+}
+
+.fundoLista {
+    background-color: #f8f9fa;
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}

@@ -82,15 +82,18 @@ export default function Header() {
                         </>
                     ) : (
                         <div className={estilo.userArea}>
-                            <img
-                                src={`http://localhost:5000/uploads/Usuarios/${usuario.id_usuario}.jpg`}
-                                alt="perfil"
-                                className={estilo.avatar}
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = "/icone_foto.png";
-                                }}
-                            />
+                            <Link to={"/Dashboard"} onClick={fecharMenu}>
+                                <img
+                                    src={`http://localhost:5000/uploads/Usuarios/${usuario.id_usuario}.jpg`}
+                                    alt="perfil"
+                                    className={estilo.avatar}
+                                    onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.src = "/icone_foto.png";
+                                    }}
+                                />
+                            </Link>
+
 
                             <span className={estilo.nome}>{usuario.nome}</span>
 

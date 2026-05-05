@@ -45,7 +45,7 @@ export default function RecuperarSenha() {
                 setTipo("sucesso");
                 setEtapa(2); // Avança para a tela do código
             } else {
-                setMensagem(dados.error);
+                setMensagem(dados.error || "Erro ao solicitar código.");
                 setTipo("erro");
             }
         } catch {
@@ -56,30 +56,91 @@ export default function RecuperarSenha() {
         }
     }
 
-    // ETAPA 2: Gerenciar digitação do código
-    const handleCodigoChange = (element, index) => {
-        if (isNaN(element.value)) return; // Aceita apenas números
+    const handleCodigoChange = (valor, index) => {
+        if (isNaN(valor)) return; // Aceita apenas números
 
         const novoCodigo = [...codigo];
-        novoCodigo[index] = element.value;
+        novoCodigo[index] = valor.substring(valor.length - 1);
         setCodigo(novoCodigo);
 
-        // Pula para o próximo input automaticamente
-        if (element.value !== "" && index < 5) {
+        // Pula para o próximo quadrado automaticamente se digitar algo
+        if (valor !== "" && index < 5) {
             inputRefs.current[index + 1].focus();
         }
     };
 
-    const confirmarCodigo = (e) => {
+    // 2. Apagar código rápido
+    const handleKeyDown = (e, index) => {
+        // Se apertar pra apagar e o quadrado atual já estiver vazio, volta o foco pra anterior
+        if (e.key === "Backspace" && codigo[index] === "" && index > 0) {
+            inputRefs.current[index - 1].focus();
+        }
+    };
+
+    // 3. Colar código (Paste)
+    const handlePaste = (e) => {
+        e.preventDefault(); // Impede de colar tudo em uma caixinha só
+        const textoColado = e.clipboardData.getData("text");
+
+        // Remove qualquer coisa que não seja número e corta no máximo 6 dígitos
+        const numeros = textoColado.replace(/\D/g, "").slice(0, 6);
+
+        if (numeros.length > 0) {
+            const novoCodigo = [...codigo];
+
+            // Distribui os números colados nas caixinhas
+            for (let i = 0; i < numeros.length; i++) {
+                novoCodigo[i] = numeros[i];
+            }
+            setCodigo(novoCodigo);
+
+            // Joga o foco pra última caixinha que foi preenchida
+            const indexParaFocar = numeros.length < 6 ? numeros.length : 5;
+            inputRefs.current[indexParaFocar].focus();
+        }
+    };
+
+
+
+    // ETAPA 2: Confirmar Código com o Backend antes de ir para a etapa 3
+    async function confirmarCodigo(e) {
         e.preventDefault();
         const codigoCompleto = codigo.join("");
+
         if (codigoCompleto.length < 6) {
             setMensagem("Preencha todos os 6 dígitos do código.");
             setTipo("erro");
             return;
         }
-        setEtapa(3); // Avança para a tela de nova senha
-    };
+
+        setCarregando(true);
+        try {
+            const resposta = await fetch("http://localhost:5000/recuperar_senha", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: email,
+                    codigo: codigoCompleto
+                })
+            });
+
+            const dados = await resposta.json();
+
+            if (resposta.ok) {
+                setMensagem("Código verificado!");
+                setTipo("sucesso");
+                setEtapa(3);
+            } else {
+                setMensagem(dados.error || "Código inválido.");
+                setTipo("erro");
+            }
+        } catch {
+            setMensagem("Erro ao conectar com o servidor.");
+            setTipo("erro");
+        } finally {
+            setCarregando(false);
+        }
+    }
 
     // ETAPA 3: Redefinir a Senha
     async function redefinirSenha(e) {
@@ -162,15 +223,17 @@ export default function RecuperarSenha() {
                                         maxLength="1"
                                         value={dado}
                                         ref={(el) => inputRefs.current[index] = el}
-                                        onChange={(e) => handleCodigoChange(e.target, index)}
+                                        onChange={(e) => handleCodigoChange(e.target.value, index)}
+                                        onKeyDown={(e) => handleKeyDown(e, index)}
+                                        onPaste={handlePaste}
                                         onFocus={(e) => e.target.select()}
                                         className={estilos.inputCaixinha}
                                     />
                                 ))}
                             </div>
 
-                            <button type="submit" className={estilos.botaoPreto}>
-                                CONFIRMAR
+                            <button type="submit" className={estilos.botaoPreto} disabled={carregando}>
+                                {carregando ? "VERIFICANDO..." : "CONTINUAR"}
                             </button>
                         </form>
                     )}

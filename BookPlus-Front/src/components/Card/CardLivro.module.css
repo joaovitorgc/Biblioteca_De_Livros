@@ -86,3 +86,54 @@
 .botaoEmprestar:hover {
     background-color: #4b92e8;
 }
+
+
+@media (max-width: 768px) {
+    .card {
+        height: auto;
+        min-height: 340px;
+    }
+
+    .imageContainer {
+        height: 240px;
+    }
+
+    .botaoEmprestar {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        min-height: 280px;
+    }
+
+    .imageContainer {
+        height: 180px;
+    }
+
+    .infoContainer {
+        padding: 12px;
+    }
+
+    .titulo {
+        font-size: 13px;
+        margin-left: 0;
+    }
+
+    .autor {
+        font-size: 11px;
+        margin-left: 0;
+        margin-bottom: 12px;
+    }
+
+
+    .botaoEmprestar {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+
+    .capa{
+        width: 90%;
+    }
+}

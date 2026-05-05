@@ -160,3 +160,49 @@
 }
 
 
+@media (max-width: 900px) {
+    .containerPrincipal {
+        flex-direction: column;
+    }
+
+    .painelDireito {
+        display: none;
+    }
+
+    .painelEsquerdo {
+        padding: 2rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .cartaoCadastro {
+        padding: 2rem 1.5rem;
+        border-radius: 15px;
+    }
+
+    .titulo {
+        font-size: 1.4rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .botaoAvancar {
+        width: 75%;
+        font-size: 0.8rem;
+        padding: 0.65rem;
+    }
+
+    .caixaFoto {
+        width: 100px;
+        height: 100px;
+    }
+
+    .grupoEntrada label {
+        font-size: 0.95rem;
+    }
+
+    .loginLink {
+        font-size: 0.8rem;
+    }
+}
+
+

@@ -17,3 +17,32 @@
     gap: 24px;
     justify-items: center;
 }
+
+
+
+@media (max-width: 768px) {
+    .tituloSessao {
+        font-size: 1.6rem;
+        margin-bottom: 25px;
+    }
+
+    .gridLivros {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .containerLista {
+        padding: 10px;
+    }
+
+    .tituloSessao {
+        font-size: 1.4rem;
+    }
+
+    .gridLivros {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
+    }
+}

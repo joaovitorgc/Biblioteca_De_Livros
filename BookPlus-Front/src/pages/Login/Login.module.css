@@ -171,3 +171,19 @@
         padding: 2rem;
     }
 }
+
+@media (max-width: 321px) {
+    .secaoCadastro p{
+        font-size: 0.8rem;
+    }
+
+    .botaoCadastrar{
+        font-size: 0.8rem;
+        padding: 0.65rem;
+    }
+
+    .botaoEntrar {
+        font-size: 0.8rem;
+        padding: 0.65rem;
+    }
+}

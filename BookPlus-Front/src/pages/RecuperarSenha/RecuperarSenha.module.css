@@ -4,6 +4,8 @@
     align-items: center;
     min-height: 100vh;
     background-color: #000000;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .cartaoBranco {
@@ -49,7 +51,6 @@
     font-weight: 600;
     margin-bottom: 8px;
     color: #333;
-    font-family: sans-serif;
 }
 
 .inputTexto {
@@ -123,4 +124,58 @@
 .botaoPreto:disabled {
     background-color: #666666;
     cursor: not-allowed;
+}
+
+
+
+@media (max-width: 480px) {
+    .cartaoBranco {
+        padding: 40px 20px;
+        border-radius: 15px;
+    }
+
+    .titulo {
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+
+    .subtitulo {
+        font-size: 0.85rem;
+    }
+
+    .containerCodigo {
+        gap: 6px;
+        margin-bottom: 25px;
+    }
+
+    .inputCaixinha {
+        width: 42px;
+        height: 52px;
+        font-size: 22px;
+        border-radius: 8px;
+    }
+
+    .botaoPreto {
+        width: 85%;
+        padding: 8px;
+        margin-top: 20px;
+        font-size: 0.8rem;
+    }
+}
+
+
+@media (max-width: 360px) {
+    .cartaoBranco {
+        padding: 30px 15px;
+    }
+
+    .containerCodigo {
+        gap: 4px;
+    }
+
+    .inputCaixinha {
+        width: 35px;
+        height: 45px;
+        font-size: 18px;
+    }
 }
