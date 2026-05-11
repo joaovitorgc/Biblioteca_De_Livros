@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import css from "./Dashboard.module.css";
 import FlashMessage from "../../components/FlashMessage/FlashMessage.jsx";
+import AdminUsuarios from "../AdminUsuarios/AdminUsuarios.jsx";
 
-export default function Dashboard() {
+export default function Dashboard({ usuario }) {
     const [mensagem, setMensagem] = useState("");
     const [tipo, setTipo] = useState("");
 
@@ -24,6 +25,10 @@ export default function Dashboard() {
             });
         }
     }, [navigate]);
+
+    if (usuario?.tipo === 0) {
+        return <AdminUsuarios />;
+    }
 
     return (
         <>

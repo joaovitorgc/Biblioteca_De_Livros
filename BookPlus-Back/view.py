@@ -130,9 +130,10 @@ def login():
             WHERE email = ?
         """, (email,))
         usuario = cursor.fetchone()
-        print(usuario[4])
+
         if not usuario:
             return jsonify({'error': 'Usuário não encontrado.'}), 404
+        print(usuario[4])
 
         senha_hash = usuario[0]
         id_usuario = usuario[1]
@@ -463,6 +464,9 @@ def listar_usuarios():
         cur.execute("SELECT id_usuario, nome, email FROM usuarios")
         usuarios = cur.fetchall()
 
+        cur.execute("SELECT count(*) FROM usuarios")
+        total_usuarios = cur.fetchone()[0]
+
         lista_usuarios = []
 
         for usuario in usuarios:
@@ -472,8 +476,15 @@ def listar_usuarios():
                 "email": usuario[2]
             })
 
-        return jsonify(lista_usuarios)
+        return jsonify({
+            "usuarios": lista_usuarios,
+            "total_usuarios": total_usuarios
+        })
+
     except Exception as e:
-        return jsonify({ 'error': 'Erro ao conectar com a API: ' + str(e) }, 500)
+        return jsonify({
+            'error': 'Erro ao conectar com a API: ' + str(e)
+        }), 500
+
     finally:
         cur.close()

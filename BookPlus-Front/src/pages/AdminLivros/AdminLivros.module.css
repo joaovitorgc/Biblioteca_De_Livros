@@ -1,0 +1,125 @@
+/* Container principal da página (abaixo das estatísticas) */
+.container {
+    flex: 1;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.gradeEstatisticas {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.tituloPagina {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 30px;
+    color: #000000;
+}
+
+/* Área do botão Novo Livro */
+.acoesTop {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+.btnNovoLivro {
+    background-color: #93C5FD; /* Azul claro inspirado na imagem */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btnNovoLivro:hover {
+    background-color: #7ab3f5;
+}
+
+/* Container da lista de livros (Fundo cinza claro) */
+.listaContainer {
+    background-color: #F8F9FA; /* Fundo cinza bem claro */
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Card individual de cada livro */
+.livroCard {
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 2px solid #E5E7EB; /* Linha separadora */
+}
+
+/* Remove a borda do último elemento para ficar igual à imagem */
+.livroCard:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.livroImagem {
+    width: 130px;
+    height: 190px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Informações do livro */
+.livroInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    position: relative; /* Necessário para posicionar os botões no canto inferior direito */
+}
+
+.livroInfo p {
+    margin: 4px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Container dos botões de ação (Excluir/Editar) */
+.botoesAcao {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    gap: 10px;
+}
+
+.botoesAcao button {
+    border: none;
+    padding: 6px 24px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.botoesAcao button:hover {
+    opacity: 0.8;
+}
+
+.btnExcluir {
+    background-color: #FF0000; /* Vermelho */
+}
+
+.btnEditar {
+    background-color: #7EBAFF; /* Azul claro */
+}

@@ -8,8 +8,8 @@ import ValidarEmail from "./pages/validarEmail/validarEmail.jsx";
 import Dashboard from "./pages/Dashboard/Dashboard.jsx";
 import RecuperarSenha from "./pages/RecuperarSenha/RecuperarSenha.jsx";
 import AdminUsuarios from "./pages/AdminUsuarios/AdminUsuarios.jsx";
+import AdminLivros from "./pages/AdminLivros/AdminLivros.jsx";
 function App() {
-
 
 
     return (
@@ -18,12 +18,13 @@ function App() {
             <Header />
             <Routes>
                 <Route path="/" element={ <Home/> } />
-                <Route path="/Login" element={ <Login/> } />
+                <Route path="/Login" element={ <Login /> } />
                 <Route path="/cadastro" element={ <Cadastro/> } />
                 <Route path="/ValidarEmail" element={ <ValidarEmail/> } />
-                <Route path="/Dashboard" element={ <Dashboard/> } />
+                <Route path="/Dashboard" element={<Dashboard />} />
+                <Route path="/AdminUsuarios" element={<AdminUsuarios />} />
                 <Route path="/RecuperarSenha" element={ <RecuperarSenha/> } />
-                <Route path="/AdminUsuarios" element={ <AdminUsuarios/> } />
+                <Route path="/AdminLivros" element={<AdminLivros />} />
             </Routes>
             <Footer/>
 
