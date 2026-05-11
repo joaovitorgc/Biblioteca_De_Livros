@@ -1,13 +1,12 @@
 import React from 'react';
 import estilos from './CartaoUsuario.module.css';
 
-export default function CartaoUsuario({ nome, email }) {
+export default function CartaoUsuario({ id, nome, email }) {
     return (
         <div className={estilos.item}>
             <div className={estilos.infoEsquerda}>
                 <div className={estilos.iconeImagem}>
-                    {/* Substitua por um ícone de imagem real do seu projeto */}
-                    <span>Foto</span>
+                    <img src={"http://127.0.0.1:5000/uploads/Usuarios/" + id + ".jpg"} alt="" />
                 </div>
                 <div className={estilos.textos}>
                     <p><strong>Nome:</strong> {nome}</p>

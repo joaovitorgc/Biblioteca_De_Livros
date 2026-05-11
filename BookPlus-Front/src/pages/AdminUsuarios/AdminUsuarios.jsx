@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import estilos from './AdminUsuarios.module.css';
 
 import CartaoEstatistica from '../../components/CartaoEstatistica/CartaoEstatistica';
@@ -7,6 +7,7 @@ import CartaoUsuario from '../../components/CartaoUsuario/CartaoUsuario';
 
 export default function AdminUsuarios() {
     const [abaSelecionada, setAbaSelecionada] = useState('Usuários');
+    const [listaDeUsuarios, setListaDeUsuarios] = useState([]);
 
     const dadosEstatisticas = [
         { id: 1, titulo: "Total De Empréstimos", valor: 9 },
@@ -16,11 +17,26 @@ export default function AdminUsuarios() {
 
     const listaDeAbas = ['Usuários', 'Livros', 'Relatórios', 'Empréstimos'];
 
-    const listaDeUsuarios = [
-        { id: 1, nome: "João Vitor", email: "J@Gmail.com" },
-        { id: 2, nome: "Maria Silva", email: "maria@Gmail.com" },
-        { id: 3, nome: "Carlos Eduardo", email: "carlos@Gmail.com" }
-    ];
+
+    async function buscarUsuarios() {
+        var resposta = await fetch("http://127.0.0.1:5000/listar_usuarios", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include"
+        })
+
+        resposta = await resposta.json();
+
+        console.log(resposta);
+
+        setListaDeUsuarios(resposta);
+    }
+
+    useEffect(() => async function (){
+            await buscarUsuarios()
+    }, [])
 
     return (
         <div className={estilos.containerGeral}>
@@ -53,6 +69,7 @@ export default function AdminUsuarios() {
                             {listaDeUsuarios.map((usuario) => (
                                 <CartaoUsuario
                                     key={usuario.id}
+                                    id={usuario.id}
                                     nome={usuario.nome}
                                     email={usuario.email}
                                 />

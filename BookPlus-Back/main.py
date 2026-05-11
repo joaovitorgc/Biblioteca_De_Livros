@@ -5,6 +5,8 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True, origins=['http://localhost:5173'])
 app.config.from_pyfile('config.py')
 
+from view import *
+
 try:
     con = fdb.connect(
         host=app.config['DB_HOST'],
@@ -15,8 +17,6 @@ try:
     print('Conectado com sucesso')
 except Exception as e:
     print("Erro: " + str(e))
-
-from view import *
 
 if __name__ == '__main__':
     app.run(debug=True)

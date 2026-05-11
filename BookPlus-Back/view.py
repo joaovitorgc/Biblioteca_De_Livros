@@ -6,6 +6,7 @@ from flask import Flask, jsonify, request, make_response, send_from_directory
 import threading
 import os.path
 
+
 from flask_bcrypt import check_password_hash, generate_password_hash
 
 from main import app, con
@@ -454,5 +455,25 @@ def recuperar_senha():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/listar_usuarios', methods=['GET'])
+def listar_usuarios():
+    cur = con.cursor()
+
+    try:
+        cur.execute("SELECT id_usuario, nome, email FROM usuarios")
+        usuarios = cur.fetchall()
+
+        lista_usuarios = []
+
+        for usuario in usuarios:
+            lista_usuarios.append({
+                "id": usuario[0],
+                "nome": usuario[1],
+                "email": usuario[2]
+            })
+
+        return jsonify(lista_usuarios)
+    except Exception as e:
+        return jsonify({ 'error': 'Erro ao conectar com a API: ' + str(e) }, 500)
     finally:
         cur.close()
