@@ -60,7 +60,6 @@ export default function AdminUsuarios() {
         setTotalUsuarios(resposta.total_usuarios);
     }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         buscarUsuarios();
     }, []);

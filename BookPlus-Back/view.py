@@ -1,18 +1,28 @@
 import datetime
 import random
-import secrets
+from flask_bcrypt import generate_password_hash
+from flask_bcrypt import check_password_hash
 
-from flask import Flask, jsonify, request, make_response, send_from_directory
+from flask import send_from_directory
+from funcao import decodificar_token
+from funcao import encode_password
+from funcao import validar_senha
+from funcao import enviando_email
+from flask import make_response
+from flask import jsonify
+from funcao import gerar_token
+
 import threading
+from flask import request
+from main import app, con
+
+# from flask import Flask
+
+import secrets
 import os.path
 
-
-from flask_bcrypt import check_password_hash, generate_password_hash
-
-from main import app, con
-from funcao import validar_senha, encode_password, enviando_email, gerar_token, decodificar_token
-
 import jwt
+import os
 
 @app.route("/cadastro", methods=['POST'])
 def cadastro():
@@ -488,3 +498,166 @@ def listar_usuarios():
 
     finally:
         cur.close()
+
+
+@app.route("/cadastrar_livro", methods=['POST'])
+def cadastrar_livro():
+    cursor = con.cursor()
+
+    try:
+        titulo = request.form.get('titulo')
+        autor = request.form.get('autor')
+        genero = request.form.get('genero')
+        ano_publicacao = request.form.get('ano_publicacao')
+        estoque = request.form.get('estoque')
+
+        imagem = request.files.get('imagem')
+
+        if not titulo or not autor or not genero or not ano_publicacao or not estoque:
+            return jsonify({
+                'error': 'Todos os campos são obrigatórios.'
+            }), 400
+
+        cursor.execute("""
+            INSERT INTO livro (
+                titulo,
+                autor,
+                genero,
+                ano_publicacao,
+                estoque
+            )
+            VALUES (?, ?, ?, ?, ?)
+            RETURNING id_livro
+        """, (
+            titulo,
+            autor,
+            genero,
+            ano_publicacao,
+            estoque
+        ))
+
+        id_livro = cursor.fetchone()[0]
+
+        con.commit()
+
+        if imagem:
+            nome_imagem = f"{id_livro}.jpg"
+
+            caminho_imagem_destino = os.path.join(
+                app.config['UPLOAD_FOLDER'],
+                "uploads",
+                "Livros"
+            )
+
+            os.makedirs(caminho_imagem_destino, exist_ok=True)
+
+            caminho_imagem = os.path.join(
+                caminho_imagem_destino,
+                nome_imagem
+            )
+            imagem.save(caminho_imagem)
+
+        return jsonify({
+            'mensagem': 'Livro cadastrado com sucesso!',
+            'livro': {
+                'titulo': titulo,
+                'autor': autor,
+                'genero': genero,
+                'ano_publicacao': ano_publicacao,
+                'estoque': estoque
+            }
+        }), 201
+
+    except Exception as e:
+        print(e)
+        con.rollback()
+        return jsonify({'error': 'Erro ao cadastrar o livro.'}), 500
+    finally:
+        cursor.close()
+
+@app.route('/listar_livros', methods=['GET'])
+def listar_livros():
+    cur = con.cursor()
+    try:
+        cur.execute("SELECT id_livro, titulo, autor, genero, ano_publicacao, estoque FROM livro")
+        livros = cur.fetchall()
+
+        cur.execute("SELECT count(*) FROM livro")
+        total_livros = cur.fetchone()[0]
+
+        lista_livros = []
+        for livro in livros:
+            lista_livros.append({
+                "id_livro": livro[0],
+                "titulo": livro[1],
+                "autor": livro[2],
+                "genero": livro[3],
+                "ano_publicacao": livro[4],
+                "estoque": livro[5],
+            })
+
+        return jsonify({
+            "livros": lista_livros,
+            "total_livros": total_livros
+        })
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cur.close()
+
+@app.route('/uploads/livros/<int:id>', methods=['GET'])
+def imagem_livro(id):
+    try:
+        pasta_uploads = os.path.join(app.root_path, 'uploads', 'Livros')
+
+        nome_arquivo = f"{id}.jpg"
+
+        caminho_arquivo = os.path.join(pasta_uploads, nome_arquivo)
+
+        if not os.path.exists(caminho_arquivo):
+            return jsonify({
+                "erro": "Imagem não encontrada"
+            }), 404
+
+        return send_from_directory(
+            directory=pasta_uploads,
+            path=nome_arquivo,
+            mimetype='image/jpeg'
+        )
+
+    except Exception as e:
+        return jsonify({
+            "erro": str(e)
+        }), 500
+
+@app.route('/deletar_livro/<int:id>', methods=['DELETE'])
+def deletar_livro(id):
+    try:
+        token = request.cookies.get('access_token')
+
+        if not token:
+            return jsonify({"error": "Token necessário"}), 401
+
+        payload = decodificar_token(token)
+
+        if payload['tipo'] != 0:
+            return jsonify({"error": "Acesso negado. Apenas administradores podem acessar esse recurso"}), 403
+
+        cur = con.cursor()
+
+        cur.execute('SELECT 1 FROM livro WHERE id_livro = ?', (id,))
+        if not cur.fetchone():
+            return jsonify({"error": "Livro não encontrado"}), 404
+
+        cur.execute("DELETE FROM livro WHERE id_livro = ?", (id,))
+        con.commit()
+
+        return jsonify({"message": "Livro excluído com sucesso"})
+    except jwt.ExpiredSignatureError:
+        return jsonify({"error": "Token expired"}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"error": "Token invalid"}), 401
+    except Exception as e:
+        con.rollback()
+        return jsonify({"error": "Internal server error"}), 500

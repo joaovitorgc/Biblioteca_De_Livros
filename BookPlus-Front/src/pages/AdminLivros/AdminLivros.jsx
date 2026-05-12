@@ -1,67 +1,73 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Assumindo que você usa react-router-dom
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import estilos from './AdminLivros.module.css';
+
 import AbasNavegacao from "../../components/AbasNavegacao/AbasNavegacao.jsx";
 import CartaoEstatistica from "../../components/CartaoEstatistica/CartaoEstatistica.jsx";
 import FlashMessage from "../../components/FlashMessage/FlashMessage.jsx";
 
 export default function AdminLivros() {
     const navigate = useNavigate();
+    const [livros, setLivros] = useState([]);
+    const [totalLivros, setTotalLivros] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [erro, setErro] = useState('');
 
-    // Como você mencionou que as rotas ainda serão feitas, esta função
-    // prepara o terreno para quando elas existirem.
     const dadosEstatisticas = [
         { id: 1, titulo: "Total De Empréstimos", valor: 9 },
         { id: 2, titulo: "Usuários Cadastrados", valor: 8 },
-        { id: 3, titulo: "Livros Cadastrados", valor: 10 }
+        { id: 3, titulo: "Livros Cadastrados", valor: totalLivros }
     ];
 
     const handleMudarAba = (aba) => {
-        // Se já estivermos na aba Livros, não faz nada
         if (aba === 'Livros') return;
-
-        // Mapeamento manual das rotas para garantir que o link seja exato
-        switch (aba) {
-            case 'Usuários':
-                navigate('/AdminUsuarios');
-                break;
-            case 'Relatórios':
-                navigate('/AdminRelatorios'); // Ou a rota que você definir
-                break;
-            case 'Empréstimos':
-                navigate('/AdminEmprestimos'); // Ou a rota que você definir
-                break;
-            default:
-                navigate('/');
-        }
+        const rotas = {
+            'Usuários': '/AdminUsuarios',
+            'Relatórios': '/AdminRelatorios',
+            'Empréstimos': '/AdminEmprestimos'
+        };
+        navigate(rotas[aba] || '/');
     };
 
-    // Dados mockados baseados na imagem para você testar o visual
-    const livrosMock = [
-        {
-            id: 1,
-            titulo: 'O Retrato de Dorian Gray',
-            autor: 'Oscar Wilde',
-            ano: '1890',
-            estoque: 4,
-            emprestados: 2,
-            imagem: 'https://via.placeholder.com/120x180?text=Capa+Dorian+Gray' // Substitua pelas imagens reais
-        },
-        {
-            id: 2,
-            titulo: 'O Príncipe',
-            autor: 'Nicolau Maquiavel',
-            ano: '1532',
-            estoque: 5,
-            emprestados: 0,
-            imagem: 'https://via.placeholder.com/120x180?text=Capa+O+Principe' // Substitua pelas imagens reais
+    async function onDelete(id_livro){
+        const res = await fetch("http://localhost:5000/deletar_livro/" + id_livro, {
+            method: 'DELETE',
+            credentials: 'include'
+        })
+    }
+
+    async function buscarLivros() {
+        try {
+            setLoading(true);
+            const response = await fetch('http://127.0.0.1:5000/listar_livros');
+
+            if (!response.ok) {
+                throw new Error('Falha ao buscar dados do servidor');
+            }
+
+            const data = await response.json();
+
+            console.log(data.livros)
+
+            setLivros(data.livros);
+            setTotalLivros(data.total_livros);
+        } catch (error) {
+            console.error("Erro na requisição:", error);
+            setErro('Erro ao carregar livros. Verifique se o servidor está rodando.');
+        } finally {
+            setLoading(false);
         }
-    ];
+    }
+
+    useEffect(() => {
+        buscarLivros();
+    }, []);
 
     return (
         <main className={estilos.container}>
-            {/* O Header e as Estatísticas ficariam acima daqui, provavelmente em um Layout pai */}
             <h1 className={estilos.tituloPagina}>Página Administrador</h1>
+
             <div className={estilos.gradeEstatisticas}>
                 {dadosEstatisticas.map((dado) => (
                     <CartaoEstatistica
@@ -79,35 +85,43 @@ export default function AdminLivros() {
             />
 
             <div className={estilos.acoesTop}>
-                <button className={estilos.btnNovoLivro}>
-                    + Novo Livro
-                </button>
+                <button className={estilos.btnNovoLivro}>+ Novo Livro</button>
             </div>
 
-            <div className={estilos.listaContainer}>
-                {livrosMock.map((livro) => (
-                    <div key={livro.id} className={estilos.livroCard}>
-                        <img
-                            src={livro.imagem}
-                            alt={`Capa do livro ${livro.titulo}`}
-                            className={estilos.livroImagem}
-                        />
+            {erro && <FlashMessage tipo="erro" mensagem={erro} />}
 
-                        <div className={estilos.livroInfo}>
-                            <p><span>Título:</span> {livro.titulo}</p>
-                            <p><span>Autor:</span> {livro.autor}</p>
-                            <p><span>Ano de Publicação:</span> {livro.ano}</p>
-                            <p><span>Estoque:</span> {livro.estoque}</p>
-                            <p><span>Emprestados:</span> {livro.emprestados}</p>
+            {loading ? (
+                <p>Carregando livros...</p>
+            ) : (
+                <div className={estilos.listaContainer}>
+                    {livros && livros.length > 0 ? (
+                        livros.map((livro) => (
+                            <div key={livro.id_livro} className={estilos.livroCard}>
+                                <img
+                                    src={`http://127.0.0.1:5000/uploads/Livros/${livro.id_livro}.jpg`}
+                                    alt={`Capa do livro ${livro.titulo}`}
+                                    className={estilos.livroImagem}
+                                />
 
-                            <div className={estilos.botoesAcao}>
-                                <button className={estilos.btnExcluir}>Excluir</button>
-                                <button className={estilos.btnEditar}>Editar</button>
+                                <div className={estilos.livroInfo}>
+                                    <p><span>Título:</span> {livro.titulo}</p>
+                                    <p><span>Autor:</span> {livro.autor}</p>
+                                    <p><span>Gênero:</span> {livro.genero}</p>
+                                    <p><span>Ano:</span> {livro.ano_publicacao}</p>
+                                    <p><span>Estoque:</span> {livro.estoque}</p>
+
+                                    <div className={estilos.botoesAcao}>
+                                        <button className={estilos.btnExcluir} onClick={() => onDelete(livro.id_livro)}>Excluir</button>
+                                        <button className={estilos.btnEditar}>Editar</button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                        ))
+                    ) : (
+                        <p>Nenhum livro cadastrado.</p>
+                    )}
+                </div>
+            )}
         </main>
     );
 }

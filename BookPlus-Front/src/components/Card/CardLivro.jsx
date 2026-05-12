@@ -1,11 +1,11 @@
 import React from 'react';
 import estilo from './CardLivro.module.css';
 
-export default function CardLivro({ imagem, titulo, autor }) {
+export default function CardLivro({ id, titulo, autor }) {
     return (
         <div className={estilo.card}>
             <div className={estilo.imageContainer}>
-                <img src={imagem} alt={`Capa do livro ${titulo}`} className={estilo.capa} />
+                <img src={"http://127.0.0.1:5000/uploads/livros/" + id + ".jpg"} className={estilo.capa} />
             </div>
 
             <div className={estilo.infoContainer}>
