@@ -1,125 +1,271 @@
-/* Container principal da página (abaixo das estatísticas) */
+/* Container principal da página */
 .container {
+    font-family: 'Montserrat', sans-serif;
+
     flex: 1;
     max-width: 1000px;
+
     margin: 0 auto;
+
     padding: 40px 20px;
+
     width: 100%;
+
     box-sizing: border-box;
 }
 
-.gradeEstatisticas {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin-bottom: 40px;
-    flex-wrap: wrap;
-}
-
+/* Título */
 .tituloPagina {
     text-align: center;
+
     font-size: 1.2rem;
     font-weight: 800;
+
     margin-bottom: 30px;
+
     color: #000000;
 }
 
-/* Área do botão Novo Livro */
+/* Cards de estatísticas */
+.gradeEstatisticas {
+    display: flex;
+    justify-content: center;
+
+    gap: 30px;
+
+    margin-bottom: 40px;
+
+    flex-wrap: wrap;
+}
+
+/* Área do botão */
 .acoesTop {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 10px;
+
+    margin-bottom: 15px;
     margin-top: 20px;
 }
 
+/* Botão novo livro */
 .btnNovoLivro {
-    background-color: #93C5FD; /* Azul claro inspirado na imagem */
+    background-color: #93C5FD;
+
     color: white;
+
     border: none;
+
     padding: 8px 16px;
-    border-radius: 4px;
-    font-weight: bold;
+
+    border-radius: 6px;
+
+    font-weight: 600;
+
     cursor: pointer;
-    transition: background-color 0.2s;
+
+    transition:
+            filter 0.2s,
+            transform 0.2s;
 }
 
 .btnNovoLivro:hover {
-    background-color: #7ab3f5;
+    filter: brightness(0.95);
+    transform: scale(1.03);
 }
 
-/* Container da lista de livros (Fundo cinza claro) */
+/* Fundo da lista */
 .listaContainer {
-    background-color: #F8F9FA; /* Fundo cinza bem claro */
-    border-radius: 8px;
+    background-color: #F8F9FA;
+
+    border-radius: 15px;
+
     padding: 20px;
+
     display: flex;
     flex-direction: column;
+
+    gap: 15px;
 }
 
-/* Card individual de cada livro */
+/* Card do livro */
 .livroCard {
     display: flex;
+
     gap: 20px;
+
     padding: 20px 0;
-    border-bottom: 2px solid #E5E7EB; /* Linha separadora */
+
+    border-bottom: 2px solid #E5E7EB;
 }
 
-/* Remove a borda do último elemento para ficar igual à imagem */
 .livroCard:last-child {
     border-bottom: none;
     padding-bottom: 0;
 }
 
+/* Imagem */
 .livroImagem {
     width: 130px;
     height: 190px;
+
     object-fit: cover;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    border-radius: 6px;
+
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+
+    flex-shrink: 0;
 }
 
-/* Informações do livro */
+/* Informações */
 .livroInfo {
     flex: 1;
+
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    position: relative; /* Necessário para posicionar os botões no canto inferior direito */
+
+    position: relative;
 }
 
 .livroInfo p {
     margin: 4px 0;
+
     font-size: 14px;
-    color: #333;
+
+    color: #333333;
+
+    line-height: 1.5;
 }
 
-/* Container dos botões de ação (Excluir/Editar) */
+/* Botões */
 .botoesAcao {
     position: absolute;
+
     bottom: 0;
     right: 0;
+
     display: flex;
+
     gap: 10px;
 }
 
 .botoesAcao button {
+    padding: 8px 20px;
+
     border: none;
-    padding: 6px 24px;
-    border-radius: 4px;
-    font-weight: bold;
-    color: white;
+
+    border-radius: 6px;
+
+    font-weight: 600;
+
+    color: #ffffff;
+
     cursor: pointer;
-    transition: opacity 0.2s;
+
+    font-family: 'Montserrat', sans-serif;
+
+    transition:
+            transform 0.2s,
+            filter 0.2s;
 }
 
 .botoesAcao button:hover {
-    opacity: 0.8;
+    transform: scale(1.03);
+    filter: brightness(0.95);
 }
 
+/* Excluir */
 .btnExcluir {
-    background-color: #FF0000; /* Vermelho */
+    background-color: #FF0000;
 }
 
+.btnExcluir:hover {
+    background-color: #cc0000;
+}
+
+/* Editar */
 .btnEditar {
-    background-color: #7EBAFF; /* Azul claro */
+    background-color: #7abaff;
+}
+
+.btnEditar:hover {
+    background-color: #5a9ae0;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 768px) {
+
+    .container {
+        padding: 30px 15px;
+    }
+
+    .livroCard {
+        flex-direction: column;
+        align-items: center;
+
+        text-align: center;
+    }
+
+    .livroImagem {
+        width: 160px;
+        height: 230px;
+    }
+
+    .livroInfo {
+        width: 100%;
+        align-items: center;
+
+        padding-bottom: 70px;
+    }
+
+    .botoesAcao {
+        position: static;
+
+        margin-top: 20px;
+
+        justify-content: center;
+
+        width: 100%;
+
+        flex-wrap: wrap;
+    }
+
+    .botoesAcao button {
+        width: 140px;
+    }
+
+    .acoesTop {
+        justify-content: center;
+    }
+
+    .btnNovoLivro {
+        width: 100%;
+        max-width: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .tituloPagina {
+        font-size: 1rem;
+    }
+
+    .livroImagem {
+        width: 140px;
+        height: 200px;
+    }
+
+    .livroInfo p {
+        font-size: 13px;
+    }
+
+    .botoesAcao {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .botoesAcao button {
+        width: 100%;
+    }
 }

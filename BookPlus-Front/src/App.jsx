@@ -9,6 +9,8 @@ import Dashboard from "./pages/Dashboard/Dashboard.jsx";
 import RecuperarSenha from "./pages/RecuperarSenha/RecuperarSenha.jsx";
 import AdminUsuarios from "./pages/AdminUsuarios/AdminUsuarios.jsx";
 import AdminLivros from "./pages/AdminLivros/AdminLivros.jsx";
+import CadastroLivro from "./pages/CadastroLivro/CadastroLivro.jsx";
+import EditarLivro from "./pages/EditarLivro/EditarLivro.jsx";
 function App() {
 
 
@@ -25,6 +27,8 @@ function App() {
                 <Route path="/AdminUsuarios" element={<AdminUsuarios />} />
                 <Route path="/RecuperarSenha" element={ <RecuperarSenha/> } />
                 <Route path="/AdminLivros" element={<AdminLivros />} />
+                <Route path="/cadastrolivro" element={<CadastroLivro />} />
+                <Route path="/editar-livro" element={<EditarLivro />} />
             </Routes>
             <Footer/>
 

@@ -14,23 +14,23 @@ export default function AdminUsuarios() {
     const [totalUsuarios, setTotalUsuarios] = useState(0);
     const [mensagem, setMensagem] = useState("");
     const [tipo, setTipo] = useState("");
+    const [totalLivros, setTotalLivros] = useState(0);
+    const [loading, setLoading] = useState(false);
 
     const dadosEstatisticas = [
         { id: 1, titulo: "Total De Empréstimos", valor: 9 },
         { id: 2, titulo: "Usuários Cadastrados", valor: totalUsuarios },
-        { id: 3, titulo: "Livros Cadastrados", valor: 10 }
+        { id: 3, titulo: "Livros Cadastrados", valor: totalLivros }
     ];
 
     const listaDeAbas = ['Usuários', 'Livros', 'Relatórios', 'Empréstimos'];
 
     const handleMudarAba = (aba) => {
-        // Se já estivermos na aba Usuários, não faz nada
         if (aba === 'Usuários') return;
 
-        // Mapeamento manual das rotas
         switch (aba) {
             case 'Livros':
-                navigate('/AdminLivros'); // Verifique se sua rota no App.jsx tem esse nome
+                navigate('/AdminLivros');
                 break;
             case 'Relatórios':
                 navigate('/AdminRelatorios');
@@ -44,23 +44,46 @@ export default function AdminUsuarios() {
     };
 
     async function buscarUsuarios() {
-        let resposta = await fetch("http://127.0.0.1:5000/listar_usuarios", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include"
-        });
+        try {
+            let resposta = await fetch("http://127.0.0.1:5000/listar_usuarios", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include"
+            });
 
-        resposta = await resposta.json();
+            const dados = await resposta.json();
+            setListaDeUsuarios(dados.usuarios || []);
+            setTotalUsuarios(dados.total_usuarios || 0);
+        } catch (erro) {
+            console.error("Erro ao buscar usuários:", erro);
+        }
+    }
 
-        console.log(resposta);
+    // FUNÇÃO CORRIGIDA: Agora atualiza o estado totalLivros corretamente
+    async function buscarLivros() {
+        try {
+            setLoading(true);
+            const response = await fetch('http://127.0.0.1:5000/listar_livros');
 
-        setListaDeUsuarios(resposta.usuarios);
-        setTotalUsuarios(resposta.total_usuarios);
+            if (!response.ok) {
+                throw new Error('Falha ao buscar dados do servidor');
+            }
+
+            const data = await response.json();
+
+            // Aqui atualizamos apenas o total para o card de estatística
+            setTotalLivros(data.total_livros || 0);
+        } catch (error) {
+            console.error("Erro ao buscar livros:", error);
+        } finally {
+            setLoading(false);
+        }
     }
 
     useEffect(() => {
+        buscarLivros();
         buscarUsuarios();
     }, []);
 
@@ -74,12 +97,11 @@ export default function AdminUsuarios() {
                 }
             );
             const dados = await resposta.json();
-            console.log(dados);
 
             if (resposta.ok) {
                 setMensagem(dados.message);
                 setTipo("sucesso");
-                buscarUsuarios();
+                buscarUsuarios(); // Recarrega a lista e o contador
             } else {
                 setMensagem(dados.error);
                 setTipo("erro");
@@ -113,27 +135,28 @@ export default function AdminUsuarios() {
 
                 <AbasNavegacao
                     abas={listaDeAbas}
-                    abaAtiva="Usuários" // Fixado como Usuários pois esta é a página deles
+                    abaAtiva="Usuários"
                     aoMudarAba={handleMudarAba}
                 />
 
                 <section className={estilos.secaoUsuarios}>
-                    <div className={estilos.cabecalhoLista}>
-                    </div>
-
                     <div className={estilos.fundoLista}>
-                        {listaDeUsuarios.map((usuario) => (
-                            <CartaoUsuario
-                                key={usuario.id}
-                                id={usuario.id}
-                                nome={usuario.nome}
-                                email={usuario.email}
-                                aoExcluir={excluirUsuario}
-                            />
-                        ))}
+                        {loading ? (
+                            <p>Carregando...</p>
+                        ) : (
+                            listaDeUsuarios.map((usuario) => (
+                                <CartaoUsuario
+                                    key={usuario.id}
+                                    id={usuario.id}
+                                    nome={usuario.nome}
+                                    email={usuario.email}
+                                    aoExcluir={excluirUsuario}
+                                />
+                            ))
+                        )}
+                        {!loading && listaDeUsuarios.length === 0 && <p>Nenhum usuário encontrado.</p>}
                     </div>
                 </section>
-
             </main>
         </div>
     );

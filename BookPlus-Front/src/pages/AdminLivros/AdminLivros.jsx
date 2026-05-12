@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 
 import estilos from './AdminLivros.module.css';
 
@@ -13,10 +13,14 @@ export default function AdminLivros() {
     const [totalLivros, setTotalLivros] = useState(0);
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState('');
+    const [mensagem, setMensagem] = useState("");
+    const [tipo, setTipo] = useState("");
+    const [totalUsuarios, setTotalUsuarios] = useState(0);
+
 
     const dadosEstatisticas = [
         { id: 1, titulo: "Total De Empréstimos", valor: 9 },
-        { id: 2, titulo: "Usuários Cadastrados", valor: 8 },
+        { id: 2, titulo: "Usuários Cadastrados", valor: totalUsuarios },
         { id: 3, titulo: "Livros Cadastrados", valor: totalLivros }
     ];
 
@@ -30,11 +34,42 @@ export default function AdminLivros() {
         navigate(rotas[aba] || '/');
     };
 
+    async function buscarUsuarios() {
+        let resposta = await fetch("http://127.0.0.1:5000/listar_usuarios", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include"
+        });
+
+        resposta = await resposta.json();
+
+        console.log(resposta);
+        setTotalUsuarios(resposta.total_usuarios);}
+
+    useEffect(() => {
+        buscarUsuarios();
+    }, []);
+
     async function onDelete(id_livro){
         const res = await fetch("http://localhost:5000/deletar_livro/" + id_livro, {
             method: 'DELETE',
             credentials: 'include'
         })
+
+        const dados = await res.json();
+        console.log(dados);
+
+        if (res.ok) {
+            setMensagem(dados.message);
+            setTipo("sucesso");
+            onDelete(id_livro);
+            buscarLivros()
+        } else {
+            setMensagem(dados.error);
+            setTipo("erro");
+        }
     }
 
     async function buscarLivros() {
@@ -66,6 +101,11 @@ export default function AdminLivros() {
 
     return (
         <main className={estilos.container}>
+            <FlashMessage
+                mensagem={mensagem}
+                tipo={tipo}
+                onClose={() => setMensagem("")}
+            />
             <h1 className={estilos.tituloPagina}>Página Administrador</h1>
 
             <div className={estilos.gradeEstatisticas}>
@@ -85,7 +125,7 @@ export default function AdminLivros() {
             />
 
             <div className={estilos.acoesTop}>
-                <button className={estilos.btnNovoLivro}>+ Novo Livro</button>
+                <Link to={"/cadastrolivro"}>  <button  className={estilos.btnNovoLivro}>+ Novo Livro</button> </Link>
             </div>
 
             {erro && <FlashMessage tipo="erro" mensagem={erro} />}
@@ -112,7 +152,12 @@ export default function AdminLivros() {
 
                                     <div className={estilos.botoesAcao}>
                                         <button className={estilos.btnExcluir} onClick={() => onDelete(livro.id_livro)}>Excluir</button>
-                                        <button className={estilos.btnEditar}>Editar</button>
+                                        <button
+                                            className={estilos.btnEditar}
+                                            onClick={() =>
+                                                navigate('/editar-livro', {
+                                                    state: livro
+                                                })}>Editar</button>
                                     </div>
                                 </div>
                             </div>

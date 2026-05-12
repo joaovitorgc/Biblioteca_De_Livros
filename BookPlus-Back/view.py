@@ -171,8 +171,7 @@ def login():
                 'id_usuario': id_usuario,
                 'nome': nome,
                 'email': email,
-                'tipo': tipo,
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=10)
+                'tipo': tipo
             }
 
             token = gerar_token(payload)
@@ -513,7 +512,7 @@ def cadastrar_livro():
 
         imagem = request.files.get('imagem')
 
-        if not titulo or not autor or not genero or not ano_publicacao or not estoque:
+        if not titulo or not autor or not genero or not ano_publicacao or not estoque or not imagem:
             return jsonify({
                 'error': 'Todos os campos são obrigatórios.'
             }), 400
@@ -661,3 +660,79 @@ def deletar_livro(id):
     except Exception as e:
         con.rollback()
         return jsonify({"error": "Internal server error"}), 500
+@app.route("/editar_livro/<int:id_livro>", methods=['PUT'])
+def editar_livro(id_livro):
+
+    cursor = con.cursor()
+
+    try:
+
+        titulo = request.form.get('titulo')
+        autor = request.form.get('autor')
+        genero = request.form.get('genero')
+        ano_publicacao = request.form.get('ano_publicacao')
+        estoque = request.form.get('estoque')
+
+        imagem = request.files.get('imagem')
+
+        if not titulo or not autor or not genero or not ano_publicacao or not estoque:
+
+            return jsonify({
+                'error': 'Todos os campos são obrigatórios.'
+            }), 400
+
+        cursor.execute("""
+            UPDATE livro
+            SET
+                titulo = ?,
+                autor = ?,
+                genero = ?,
+                ano_publicacao = ?,
+                estoque = ?
+            WHERE id_livro = ?
+        """, (
+            titulo,
+            autor,
+            genero,
+            ano_publicacao,
+            estoque,
+            id_livro
+        ))
+
+        con.commit()
+
+        if imagem:
+
+            nome_imagem = f"{id_livro}.jpg"
+
+            caminho_imagem_destino = os.path.join(
+                app.config['UPLOAD_FOLDER'],
+                "uploads",
+                "Livros"
+            )
+
+            os.makedirs(caminho_imagem_destino, exist_ok=True)
+
+            caminho_imagem = os.path.join(
+                caminho_imagem_destino,
+                nome_imagem
+            )
+
+            imagem.save(caminho_imagem)
+
+        return jsonify({
+            'mensagem': 'Livro atualizado com sucesso!'
+        }), 200
+
+    except Exception as e:
+
+        print(e)
+
+        con.rollback()
+
+        return jsonify({
+            'error': 'Erro ao editar o livro.'
+        }), 500
+
+    finally:
+        cursor.close()

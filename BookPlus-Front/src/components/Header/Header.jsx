@@ -82,7 +82,7 @@ export default function Header() {
                         </>
                     ) : (
                         <div className={estilo.userArea}>
-                            <Link to={"/Dashboard"} onClick={fecharMenu}>
+                            <Link to={usuario.tipo === 0 ? '/AdminUsuarios' : "/Dashboard"} onClick={fecharMenu}>
                                 <img
                                     src={`http://localhost:5000/uploads/Usuarios/${usuario.id_usuario}.jpg`}
                                     alt="perfil"
