@@ -21,13 +21,14 @@ export default function AdminLivros() {
     const [tipo, setTipo] = useState("");
 
     const [totalUsuarios, setTotalUsuarios] = useState(0);
+    const [totalEmprestimos, setTotalEmprestimos] = useState(0);
 
     // MODAL
     const [modalAberto, setModalAberto] = useState(false);
     const [livroSelecionado, setLivroSelecionado] = useState(null);
 
     const dadosEstatisticas = [
-        { id: 1, titulo: "Total De Empréstimos", valor: 9 },
+        { id: 1, titulo: "Total De Empréstimos", valor: totalEmprestimos },
         { id: 2, titulo: "Usuários Cadastrados", valor: totalUsuarios },
         { id: 3, titulo: "Livros Cadastrados", valor: totalLivros }
     ];
@@ -69,6 +70,24 @@ export default function AdminLivros() {
         buscarUsuarios();
     }, []);
 
+    async function buscarEmprestimos() {
+
+        try {
+            const resposta = await fetch(
+                "http://127.0.0.1:5000/listar_emprestimos",
+                {
+                    method: "GET",
+                    credentials: "include"
+                });
+            const dados = await resposta.json();
+
+            setTotalEmprestimos(dados.emprestimos.length);
+        } catch (erro) {
+            console.log(erro);
+
+        }
+    }
+
     async function buscarLivros() {
 
         try {
@@ -105,6 +124,7 @@ export default function AdminLivros() {
 
     useEffect(() => {
         buscarLivros();
+        buscarEmprestimos();
     }, []);
 
     // ABRIR MODAL

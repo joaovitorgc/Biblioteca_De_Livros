@@ -1,0 +1,47 @@
+.card {
+    width: 100%;
+
+    display: flex;
+    gap: 20px;
+
+    padding-bottom: 20px;
+
+    border-bottom: 1px solid #999;
+}
+
+.capa {
+    width: 130px;
+    height: 180px;
+
+    object-fit: cover;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    font-size: 14px;
+}
+
+.botao {
+    width: 140px;
+
+    margin-top: 20px;
+
+    padding: 10px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background-color: #7df07d;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.botao:hover {
+    opacity: 0.8;
+}

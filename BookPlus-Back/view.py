@@ -950,3 +950,80 @@ def verificar_emprestimo(id_usuario, id_livro):
             "erro": True,
             "mensagem": str(e)
         }), 500
+
+@app.route('/listar_emprestimos', methods=['GET'])
+def listar_emprestimos():
+
+    cur = con.cursor()
+
+    try:
+
+        cur.execute("""
+
+            SELECT
+                e.ID_EMPRESTIMO,
+                e.ID_LIVRO,
+                u.NOME,
+                u.EMAIL,
+                l.ESTOQUE,
+                e.DATA_DEVOLUCAO_PREVISTA,
+
+                (
+                    SELECT COUNT(*)
+                    FROM EMPRESTIMOS emp
+                    WHERE emp.ID_LIVRO = l.ID_LIVRO
+                    AND emp.DATA_DEVOLUCAO_REAL IS NULL
+                ) AS EMPRESTADOS
+
+            FROM EMPRESTIMOS e
+
+            INNER JOIN USUARIOS u
+            ON u.ID_USUARIO = e.ID_USUARIO
+
+            INNER JOIN LIVRO l
+            ON l.ID_LIVRO = e.ID_LIVRO
+
+            WHERE e.DATA_DEVOLUCAO_REAL IS NULL
+
+        """)
+
+        emprestimos = cur.fetchall()
+
+        lista_emprestimos = []
+
+        for emprestimo in emprestimos:
+
+            lista_emprestimos.append({
+
+                "id_emprestimo": emprestimo[0],
+                "id_livro": emprestimo[1],
+
+                "usuario": emprestimo[2],
+                "email": emprestimo[3],
+
+                "estoque": emprestimo[4],
+
+                "data_devolucao": (
+                    emprestimo[5].strftime("%d/%m/%Y")
+                    if emprestimo[5]
+                    else ""
+                ),
+
+                "emprestados": emprestimo[6]
+
+            })
+
+        return jsonify({
+            "emprestimos": lista_emprestimos
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "erro": True,
+            "mensagem": str(e)
+        }), 500
+
+    finally:
+
+        cur.close()

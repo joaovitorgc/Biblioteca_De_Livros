@@ -4,7 +4,7 @@ import estilo from './CardLivro.module.css';
 
 import FlashMessage from '../FlashMessage/FlashMessage';
 
-export default function CardLivro({ id, titulo, autor }) {
+export default function CardLivro({ id, titulo, autor, estoque }) {
 
     const [emprestado, setEmprestado] = useState(false);
 
@@ -43,6 +43,10 @@ export default function CardLivro({ id, titulo, autor }) {
     }
 
     async function realizarEmprestimo() {
+
+        if (estoque <= 0) {
+            return;
+        }
 
         const usuario = JSON.parse(localStorage.getItem("usuario"));
 
@@ -126,11 +130,21 @@ export default function CardLivro({ id, titulo, autor }) {
                     <div className={estilo.footer}>
 
                         <button
-                            className={`${estilo.botaoEmprestar} ${emprestado ? estilo.emprestado : ""}`}
+                            className={`
+                                ${estilo.botaoEmprestar}
+                                ${emprestado ? estilo.emprestado : ""}
+                                ${estoque <= 0 ? estilo.esgotado : ""}
+                            `}
                             onClick={realizarEmprestimo}
-                            disabled={emprestado}
+                            disabled={emprestado || estoque <= 0}
                         >
-                            {emprestado ? "EMPRESTADO" : "EMPRÉSTIMO"}
+                            {
+                                estoque <= 0
+                                    ? "ESGOTADO"
+                                    : emprestado
+                                        ? "EMPRESTADO"
+                                        : "EMPRÉSTIMO"
+                            }
                         </button>
 
                     </div>

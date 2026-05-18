@@ -29,6 +29,7 @@ export default function ListaLivros() {
                         id={livro?.id_livro}
                         titulo={livro?.titulo}
                         autor={livro?.autor}
+                        estoque={livro?.estoque}
                     />) : "Não encontrado."
                 }
             </div>

@@ -18,6 +18,7 @@ export default function AdminUsuarios() {
 
     const [totalUsuarios, setTotalUsuarios] = useState(0);
     const [totalLivros, setTotalLivros] = useState(0);
+    const [totalEmprestimos, setTotalEmprestimos] = useState(0);
 
     const [mensagem, setMensagem] = useState("");
     const [tipo, setTipo] = useState("");
@@ -28,7 +29,7 @@ export default function AdminUsuarios() {
     const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
 
     const dadosEstatisticas = [
-        { id: 1, titulo: "Total De Empréstimos", valor: 9 },
+        { id: 1, titulo: "Total De Empréstimos", valor: totalEmprestimos },
         { id: 2, titulo: "Usuários Cadastrados", valor: totalUsuarios },
         { id: 3, titulo: "Livros Cadastrados", valor: totalLivros }
     ];
@@ -60,6 +61,24 @@ export default function AdminUsuarios() {
 
             default:
                 navigate('/');
+        }
+    }
+
+    async function buscarEmprestimos() {
+
+        try {
+            const resposta = await fetch(
+                "http://127.0.0.1:5000/listar_emprestimos",
+                {
+                    method: "GET",
+                    credentials: "include"
+                });
+            const dados = await resposta.json();
+
+            setTotalEmprestimos(dados.emprestimos.length);
+        } catch (erro) {
+            console.log(erro);
+
         }
     }
 
@@ -114,6 +133,7 @@ export default function AdminUsuarios() {
 
         buscarUsuarios();
         buscarLivros();
+        buscarEmprestimos()
 
     }, []);
 
