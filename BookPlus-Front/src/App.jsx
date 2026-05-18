@@ -11,6 +11,7 @@ import AdminUsuarios from "./pages/AdminUsuarios/AdminUsuarios.jsx";
 import AdminLivros from "./pages/AdminLivros/AdminLivros.jsx";
 import CadastroLivro from "./pages/CadastroLivro/CadastroLivro.jsx";
 import EditarLivro from "./pages/EditarLivro/EditarLivro.jsx";
+import EditarUsuario from "./pages/EditarUsuario/EditarUsuario.jsx";
 function App() {
 
 
@@ -29,6 +30,7 @@ function App() {
                 <Route path="/AdminLivros" element={<AdminLivros />} />
                 <Route path="/cadastrolivro" element={<CadastroLivro />} />
                 <Route path="/editar-livro" element={<EditarLivro />} />
+                <Route path="/editar-usuario" element={<EditarUsuario />} />
             </Routes>
             <Footer/>
 

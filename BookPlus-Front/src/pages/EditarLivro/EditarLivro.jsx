@@ -42,7 +42,7 @@ export default function EditarLivro() {
 
         if (Number(estoque) < 1) {
 
-            setMensagemFlash('O estoque mínimo é 1 livro 📚');
+            setMensagemFlash('O estoque mínimo é 1 livro ');
             setTipoFlash('erro');
 
             return;

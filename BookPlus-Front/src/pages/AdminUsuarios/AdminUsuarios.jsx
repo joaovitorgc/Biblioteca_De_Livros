@@ -6,6 +6,7 @@ import estilos from './AdminUsuarios.module.css';
 import CartaoEstatistica from '../../components/CartaoEstatistica/CartaoEstatistica';
 import AbasNavegacao from '../../components/AbasNavegacao/AbasNavegacao';
 import CartaoUsuario from '../../components/CartaoUsuario/CartaoUsuario';
+
 import FlashMessage from "../../components/FlashMessage/FlashMessage.jsx";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal.jsx";
 
@@ -14,16 +15,15 @@ export default function AdminUsuarios() {
     const navigate = useNavigate();
 
     const [listaDeUsuarios, setListaDeUsuarios] = useState([]);
+
     const [totalUsuarios, setTotalUsuarios] = useState(0);
+    const [totalLivros, setTotalLivros] = useState(0);
 
     const [mensagem, setMensagem] = useState("");
     const [tipo, setTipo] = useState("");
 
-    const [totalLivros, setTotalLivros] = useState(0);
-
     const [loading, setLoading] = useState(false);
 
-    // MODAL
     const [modalAberto, setModalAberto] = useState(false);
     const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
 
@@ -40,7 +40,7 @@ export default function AdminUsuarios() {
         'Empréstimos'
     ];
 
-    const handleMudarAba = (aba) => {
+    function handleMudarAba(aba) {
 
         if (aba === 'Usuários') return;
 
@@ -61,19 +61,16 @@ export default function AdminUsuarios() {
             default:
                 navigate('/');
         }
-    };
+    }
 
     async function buscarUsuarios() {
 
         try {
 
-            let resposta = await fetch(
+            const resposta = await fetch(
                 "http://127.0.0.1:5000/listar_usuarios",
                 {
                     method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
                     credentials: "include"
                 }
             );
@@ -85,7 +82,7 @@ export default function AdminUsuarios() {
 
         } catch (erro) {
 
-            console.error("Erro ao buscar usuários:", erro);
+            console.log(erro);
         }
     }
 
@@ -99,17 +96,13 @@ export default function AdminUsuarios() {
                 'http://127.0.0.1:5000/listar_livros'
             );
 
-            if (!response.ok) {
-                throw new Error('Falha ao buscar dados do servidor');
-            }
-
             const data = await response.json();
 
             setTotalLivros(data.total_livros || 0);
 
-        } catch (error) {
+        } catch (erro) {
 
-            console.error("Erro ao buscar livros:", error);
+            console.log(erro);
 
         } finally {
 
@@ -119,25 +112,23 @@ export default function AdminUsuarios() {
 
     useEffect(() => {
 
-        buscarLivros();
         buscarUsuarios();
+        buscarLivros();
 
     }, []);
 
-    // ABRIR MODAL
     function abrirModalExcluir(id) {
 
         setUsuarioSelecionado(id);
         setModalAberto(true);
     }
 
-    // CONFIRMAR EXCLUSÃO
     async function confirmarExclusao() {
 
         try {
 
             const resposta = await fetch(
-                `http://localhost:5000/deletar_usuario/${usuarioSelecionado}`,
+                `http://127.0.0.1:5000/deletar_usuario/${usuarioSelecionado}`,
                 {
                     method: "DELETE",
                     credentials: "include"
@@ -163,7 +154,7 @@ export default function AdminUsuarios() {
 
             console.log(erro);
 
-            setMensagem("Erro de conexão com o servidor");
+            setMensagem("Erro de conexão.");
             setTipo("erro");
         }
 
@@ -188,15 +179,17 @@ export default function AdminUsuarios() {
 
                 <div className={estilos.gradeEstatisticas}>
 
-                    {dadosEstatisticas.map((dado) => (
+                    {
+                        dadosEstatisticas.map((dado) => (
 
-                        <CartaoEstatistica
-                            key={dado.id}
-                            titulo={dado.titulo}
-                            valor={dado.valor}
-                        />
+                            <CartaoEstatistica
+                                key={dado.id}
+                                titulo={dado.titulo}
+                                valor={dado.valor}
+                            />
 
-                    ))}
+                        ))
+                    }
 
                 </div>
 
@@ -210,33 +203,53 @@ export default function AdminUsuarios() {
 
                     <div className={estilos.fundoLista}>
 
-                        {loading ? (
+                        {
+                            loading ? (
 
-                            <p>Carregando...</p>
+                                <p>Carregando...</p>
 
-                        ) : (
+                            ) : (
 
-                            listaDeUsuarios.map((usuario) => (
+                                listaDeUsuarios.map((usuario) => (
 
-                                <CartaoUsuario
-                                    key={usuario.id}
-                                    id={usuario.id}
-                                    nome={usuario.nome}
-                                    email={usuario.email}
+                                    <CartaoUsuario
 
-                                    // AQUI
-                                    aoExcluir={() =>
-                                        abrirModalExcluir(usuario.id)
-                                    }
-                                />
+                                        key={usuario.id}
 
-                            ))
+                                        id={usuario.id}
+                                        nome={usuario.nome}
+                                        email={usuario.email}
 
-                        )}
+                                        aoEditar={() =>
 
-                        {!loading && listaDeUsuarios.length === 0 && (
-                            <p>Nenhum usuário encontrado.</p>
-                        )}
+                                            navigate(
+                                                '/editar-usuario',
+                                                {
+                                                    state: {
+                                                        id: usuario.id,
+                                                        nome: usuario.nome,
+                                                        email: usuario.email
+                                                    }
+                                                }
+                                            )
+                                        }
+
+                                        aoExcluir={() =>
+                                            abrirModalExcluir(usuario.id)
+                                        }
+
+                                    />
+
+                                ))
+                            )
+                        }
+
+                        {
+                            !loading &&
+                            listaDeUsuarios.length === 0 && (
+                                <p>Nenhum usuário encontrado.</p>
+                            )
+                        }
 
                     </div>
 
@@ -244,7 +257,6 @@ export default function AdminUsuarios() {
 
             </main>
 
-            {/* MODAL */}
             <ConfirmModal
                 aberto={modalAberto}
                 titulo="Excluir usuário"

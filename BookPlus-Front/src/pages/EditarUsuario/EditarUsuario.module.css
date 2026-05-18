@@ -1,0 +1,159 @@
+
+.containerPagina {
+    width: 100%;
+    min-height: calc(100vh - 160px);
+
+    background-color: #f3f3f3;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 40px 20px;
+
+    box-sizing: border-box;
+
+    font-family: 'Montserrat', sans-serif;
+}
+
+.formulario {
+    width: 100%;
+    max-width: 900px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 30px;
+}
+
+.areaFotoContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.textoFoto {
+    font-size: 13px;
+    font-weight: 600;
+
+    color: #222;
+}
+
+.areaImagem {
+    width: 160px;
+    height: 160px;
+
+    background-color: #dddddd;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.areaImagem:hover {
+    transform: scale(1.02);
+}
+
+.inputImagem {
+    display: none;
+}
+
+.previewImagem {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.areaInputs {
+    width: 100%;
+    max-width: 400px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+.grupoInput {
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+.grupoInput label {
+    font-size: 15px;
+    font-weight: 700;
+
+    color: #000;
+}
+
+.grupoInput input {
+    width: 100%;
+    height: 45px;
+
+    border: none;
+    outline: none;
+
+    background-color: #dfdfdf;
+
+    border-radius: 5px;
+
+    padding: 0 14px;
+
+    font-size: 15px;
+
+    box-sizing: border-box;
+}
+
+.botaoConfirmar {
+    width: 180px;
+    height: 40px;
+
+    margin: 25px auto 0 auto;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: #000;
+
+    color: white;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.botaoConfirmar:hover {
+    transform: scale(1.03);
+    background-color: #222;
+}
+
+@media (max-width: 768px) {
+
+    .containerPagina {
+        padding: 30px 15px;
+    }
+
+    .areaInputs {
+        max-width: 100%;
+    }
+
+    .botaoConfirmar {
+        width: 100%;
+    }
+}
