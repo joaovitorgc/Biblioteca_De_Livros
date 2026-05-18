@@ -2,6 +2,7 @@ import datetime
 import random
 from flask_bcrypt import generate_password_hash
 from flask_bcrypt import check_password_hash
+from datetime import datetime, timedelta
 
 from flask import send_from_directory
 from funcao import decodificar_token
@@ -819,3 +820,133 @@ def editar_livro(id_livro):
 
     finally:
         cursor.close()
+
+
+
+@app.route("/emprestimos", methods=["POST"])
+def realizar_emprestimo():
+
+    cursor = con.cursor()
+
+    try:
+
+        dados = request.get_json()
+
+        id_livro = dados.get("id_livro")
+        id_usuario = dados.get("id_usuario")
+
+        if not id_livro or not id_usuario:
+            return jsonify({
+                "erro": True,
+                "mensagem": "Dados inválidos."
+            }), 400
+
+        # VERIFICA SE O USUÁRIO JÁ PEGOU ESSE LIVRO
+        cursor.execute("""
+            SELECT ID_EMPRESTIMO
+            FROM EMPRESTIMOS
+            WHERE ID_USUARIO = ?
+            AND ID_LIVRO = ?
+            AND DATA_DEVOLUCAO_REAL IS NULL
+        """, (id_usuario, id_livro))
+
+        emprestimo_ativo = cursor.fetchone()
+
+        if emprestimo_ativo:
+            return jsonify({
+                "erro": True,
+                "mensagem": "Você já possui esse livro emprestado."
+            }), 400
+
+        # VERIFICA ESTOQUE
+        cursor.execute("""
+            SELECT ESTOQUE
+            FROM LIVRO
+            WHERE ID_LIVRO = ?
+        """, (id_livro,))
+
+        livro = cursor.fetchone()
+
+        if not livro:
+            return jsonify({
+                "erro": True,
+                "mensagem": "Livro não encontrado."
+            }), 404
+
+        estoque = livro[0]
+
+        if estoque <= 0:
+            return jsonify({
+                "erro": True,
+                "mensagem": "Livro indisponível."
+            }), 400
+
+        data_emprestimo = datetime.now().date()
+        data_devolucao_prevista = data_emprestimo + timedelta(days=7)
+
+        # CRIA EMPRÉSTIMO
+        cursor.execute("""
+            INSERT INTO EMPRESTIMOS (
+                ID_LIVRO,
+                ID_USUARIO,
+                DATA_EMPRESTIMO,
+                DATA_DEVOLUCAO_PREVISTA
+            )
+            VALUES (?, ?, ?, ?)
+        """, (
+            id_livro,
+            id_usuario,
+            data_emprestimo,
+            data_devolucao_prevista
+        ))
+
+        # DIMINUI ESTOQUE
+        cursor.execute("""
+            UPDATE LIVRO
+            SET ESTOQUE = ESTOQUE - 1
+            WHERE ID_LIVRO = ?
+        """, (id_livro,))
+
+        con.commit()
+
+        return jsonify({
+            "erro": False,
+            "mensagem": "Empréstimo realizado com sucesso."
+        }), 201
+
+    except Exception as e:
+
+        con.rollback()
+
+        return jsonify({
+            "erro": True,
+            "mensagem": str(e)
+        }), 500
+
+@app.route("/verificar-emprestimo/<int:id_usuario>/<int:id_livro>", methods=["GET"])
+def verificar_emprestimo(id_usuario, id_livro):
+
+    cursor = con.cursor()
+
+    try:
+
+        cursor.execute("""
+            SELECT ID_EMPRESTIMO
+            FROM EMPRESTIMOS
+            WHERE ID_USUARIO = ?
+            AND ID_LIVRO = ?
+            AND DATA_DEVOLUCAO_REAL IS NULL
+        """, (id_usuario, id_livro))
+
+        emprestimo = cursor.fetchone()
+
+        return jsonify({
+            "emprestado": emprestimo is not None
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "erro": True,
+            "mensagem": str(e)
+        }), 500
