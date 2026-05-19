@@ -4,12 +4,50 @@ import estilos from './CardEmprestimo.module.css';
 
 export default function CardEmprestimo({
                                            id,
+                                           idEmprestimo,
                                            usuario,
                                            email,
                                            estoque,
                                            emprestados,
-                                           dataDevolucao
+                                           dataDevolucao,
+                                           aoDevolver
                                        }) {
+
+    async function devolverLivro() {
+
+        try {
+
+            const resposta = await fetch(
+                `http://127.0.0.1:5000/devolver_livro/${idEmprestimo}`,
+                {
+                    method: "PUT",
+                    credentials: "include"
+                }
+            );
+
+            const dados = await resposta.json();
+
+            if (dados.erro) {
+
+                alert(dados.mensagem);
+
+                return;
+            }
+
+            alert(dados.mensagem);
+
+            if (aoDevolver) {
+                aoDevolver();
+            }
+
+        } catch (erro) {
+
+            console.log(erro);
+
+            alert("Erro ao devolver livro.");
+
+        }
+    }
 
     return (
         <div className={estilos.card}>
@@ -41,7 +79,10 @@ export default function CardEmprestimo({
                     Data De Devolução: {dataDevolucao}
                 </p>
 
-                <button className={estilos.botao}>
+                <button
+                    className={estilos.botao}
+                    onClick={devolverLivro}
+                >
                     Devolver
                 </button>
 

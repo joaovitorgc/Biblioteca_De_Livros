@@ -54,6 +54,7 @@
     background: #d4d4d4;
 }
 
+
 .confirmar {
     border: none;
     background: #dc2626;
@@ -65,8 +66,22 @@
     transition: 0.2s;
 }
 
-.confirmar:hover {
-    background: #b91c1c;
+/* VERMELHO */
+.danger {
+    background-color: #dc2626;
+}
+
+.danger:hover {
+    background-color: #b91c1c;
+}
+
+/* AZUL */
+.primary {
+    background-color: #224491;
+}
+
+.primary:hover {
+    background-color: #1a3678;
 }
 
 @keyframes aparecer {

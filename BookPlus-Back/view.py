@@ -1023,3 +1023,86 @@ def listar_emprestimos():
     finally:
 
         cur.close()
+
+@app.route('/devolver_livro/<int:id_emprestimo>', methods=['PUT'])
+def devolver_livro(id_emprestimo):
+
+    cur = con.cursor()
+
+    try:
+
+        # VERIFICA SE O EMPRÉSTIMO EXISTE
+        cur.execute("""
+
+            SELECT
+                ID_LIVRO,
+                DATA_DEVOLUCAO_REAL
+
+            FROM EMPRESTIMOS
+
+            WHERE ID_EMPRESTIMO = ?
+
+        """, (id_emprestimo,))
+
+        emprestimo = cur.fetchone()
+
+        if not emprestimo:
+
+            return jsonify({
+                "erro": True,
+                "mensagem": "Reserva não encontrada."
+            }), 404
+
+        id_livro = emprestimo[0]
+
+        devolvido = emprestimo[1]
+
+        # VÊ SE JÁ FOI DEVOLVIDO
+        if devolvido is not None:
+
+            return jsonify({
+                "erro": True,
+                "mensagem": "Este livro já foi devolvido."
+            }), 400
+
+        # ATUALIZA A DATA DE DEVOLUÇÃO
+        cur.execute("""
+
+            UPDATE EMPRESTIMOS
+
+            SET DATA_DEVOLUCAO_REAL = CURRENT_DATE
+
+            WHERE ID_EMPRESTIMO = ?
+
+        """, (id_emprestimo,))
+
+        # DEVOLVE 1 LIVRO PRO ESTOQUE
+        cur.execute("""
+
+            UPDATE LIVRO
+
+            SET ESTOQUE = ESTOQUE + 1
+
+            WHERE ID_LIVRO = ?
+
+        """, (id_livro,))
+
+        con.commit()
+
+        return jsonify({
+            "erro": False,
+            "mensagem": "Livro devolvido com sucesso."
+        })
+
+    except Exception as e:
+
+        con.rollback()
+
+        return jsonify({
+            "erro": True,
+            "mensagem": str(e)
+        }), 500
+
+    finally:
+
+        cur.close()

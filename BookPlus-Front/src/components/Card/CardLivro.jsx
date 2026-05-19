@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import estilo from './CardLivro.module.css';
 
 import FlashMessage from '../FlashMessage/FlashMessage';
+import ConfirmModal from '../ConfirmModal/ConfirmModal';
 
 export default function CardLivro({ id, titulo, autor, estoque }) {
 
@@ -10,6 +11,8 @@ export default function CardLivro({ id, titulo, autor, estoque }) {
 
     const [mensagem, setMensagem] = useState("");
     const [tipoMensagem, setTipoMensagem] = useState("");
+
+    const [modalAberto, setModalAberto] = useState(false);
 
     useEffect(() => {
 
@@ -94,10 +97,12 @@ export default function CardLivro({ id, titulo, autor, estoque }) {
 
             console.log(erro);
 
-            setMensagem("Erro ao realizar empréstimo.");
+            setMensagem("Erro ao realizar reserva.");
             setTipoMensagem("erro");
 
         }
+
+        setModalAberto(false);
     }
 
     return (
@@ -106,6 +111,16 @@ export default function CardLivro({ id, titulo, autor, estoque }) {
                 mensagem={mensagem}
                 tipo={tipoMensagem}
                 onClose={() => setMensagem("")}
+            />
+
+            <ConfirmModal
+                aberto={modalAberto}
+                titulo="Confirmar reserva"
+                mensagem={`Deseja reservar o livro "${titulo}"?`}
+                textoConfirmar="Reservar"
+                tipo="primary"
+                onConfirm={realizarEmprestimo}
+                onCancel={() => setModalAberto(false)}
             />
 
             <div className={estilo.card}>
@@ -135,7 +150,7 @@ export default function CardLivro({ id, titulo, autor, estoque }) {
                                 ${emprestado ? estilo.emprestado : ""}
                                 ${estoque <= 0 ? estilo.esgotado : ""}
                             `}
-                            onClick={realizarEmprestimo}
+                            onClick={() => setModalAberto(true)}
                             disabled={emprestado || estoque <= 0}
                         >
                             {

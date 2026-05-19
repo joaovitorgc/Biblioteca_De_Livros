@@ -4,6 +4,8 @@ export default function ConfirmModal({
                                          aberto,
                                          titulo,
                                          mensagem,
+                                         textoConfirmar = "Confirmar",
+                                         tipo = "danger",
                                          onConfirm,
                                          onCancel
                                      }) {
@@ -12,6 +14,7 @@ export default function ConfirmModal({
 
     return (
         <div className={estilos.overlay}>
+
             <div className={estilos.modal}>
 
                 <h2>{titulo}</h2>
@@ -19,6 +22,7 @@ export default function ConfirmModal({
                 <p>{mensagem}</p>
 
                 <div className={estilos.botoes}>
+
                     <button
                         className={estilos.cancelar}
                         onClick={onCancel}
@@ -27,14 +31,19 @@ export default function ConfirmModal({
                     </button>
 
                     <button
-                        className={estilos.confirmar}
+                        className={`
+                                    ${estilos.confirmar}
+                                    ${tipo === "primary" ? estilos.primary : estilos.danger}
+                                `}
                         onClick={onConfirm}
                     >
-                        Excluir
+                        {textoConfirmar}
                     </button>
+
                 </div>
 
             </div>
+
         </div>
     );
 }
