@@ -13,12 +13,12 @@ const series = [
     },
     {
         id: 2,
-        imagem: "/jogos.jpg",
+        imagem: "/the-boys.jpg",
         tag: "AÇÃO",
-        titulo: <>"Que a sorte esteja <br /> sempre a seu favor"</>,
+        titulo: <>"Pode ficar <br /> muito mais horrível"</>,
         corGradiente: "rgb(83,22,22)",
-        imagem_livro: "jogos-vorazes-livro.jpg",
-        livro_nome: "jogos-vorazes-logo.webp"
+        imagem_livro: "the-boys-hq.jpg",
+        livro_nome: "the-boys-titulo.png"
     },
     {
         id: 3,
