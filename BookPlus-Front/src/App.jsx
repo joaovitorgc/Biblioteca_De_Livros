@@ -13,6 +13,7 @@ import CadastroLivro from "./pages/CadastroLivro/CadastroLivro.jsx";
 import EditarLivro from "./pages/EditarLivro/EditarLivro.jsx";
 import EditarUsuario from "./pages/EditarUsuario/EditarUsuario.jsx";
 import EmprestimosAdm from "./pages/EmprestimosAdm/EmprestimosAdm.jsx";
+import ReservasUsuario from "./pages/ReservasUsuario/ReservasUsuario.jsx";
 function App() {
 
 
@@ -33,6 +34,7 @@ function App() {
                 <Route path="/editar-livro" element={<EditarLivro />} />
                 <Route path="/editar-usuario" element={<EditarUsuario />} />
                 <Route path="/AdminEmprestimos" element={<EmprestimosAdm />} />
+                <Route path="/reservasUsuario" element={<ReservasUsuario />} />
             </Routes>
             <Footer/>
 

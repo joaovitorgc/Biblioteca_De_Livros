@@ -1106,3 +1106,71 @@ def devolver_livro(id_emprestimo):
     finally:
 
         cur.close()
+
+@app.route('/meus_emprestimos/<int:id_usuario>', methods=['GET'])
+def meus_emprestimos(id_usuario):
+
+    cur = con.cursor()
+
+    try:
+
+        cur.execute("""
+
+            SELECT
+                e.ID_EMPRESTIMO,
+                e.ID_LIVRO,
+                l.TITULO,
+                l.AUTOR,
+                e.DATA_EMPRESTIMO,
+                e.DATA_DEVOLUCAO_PREVISTA
+
+            FROM EMPRESTIMOS e
+
+            INNER JOIN LIVRO l
+            ON l.ID_LIVRO = e.ID_LIVRO
+
+            WHERE
+                e.ID_USUARIO = ?
+                AND e.DATA_DEVOLUCAO_REAL IS NULL
+
+        """, (id_usuario,))
+
+        emprestimos = cur.fetchall()
+
+        lista_emprestimos = []
+
+        for emprestimo in emprestimos:
+
+            lista_emprestimos.append({
+
+                "id_emprestimo": emprestimo[0],
+                "id_livro": emprestimo[1],
+                "titulo": emprestimo[2],
+                "autor": emprestimo[3],
+                "data_emprestimo": (
+                    emprestimo[4].strftime("%d/%m/%Y")
+                    if emprestimo[4]
+                    else ""
+                ),
+                "data_devolucao": (
+                    emprestimo[5].strftime("%d/%m/%Y")
+                    if emprestimo[5]
+                    else ""
+                )
+
+            })
+
+        return jsonify({
+            "emprestimos": lista_emprestimos
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "erro": True,
+            "mensagem": str(e)
+        }), 500
+
+    finally:
+
+        cur.close()
