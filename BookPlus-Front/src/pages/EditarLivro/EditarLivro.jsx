@@ -18,6 +18,7 @@ export default function EditarLivro() {
     const [genero, setGenero] = useState(livro?.genero || '');
     const [anoPublicacao, setAnoPublicacao] = useState(livro?.ano_publicacao || '');
     const [estoque, setEstoque] = useState(livro?.estoque || '');
+    const [descricao, setDescricao] = useState(livro?.descricao || '');
 
     const [imagem, setImagem] = useState(null);
 
@@ -32,7 +33,14 @@ export default function EditarLivro() {
 
         e.preventDefault();
 
-        if (!titulo || !autor || !genero || !anoPublicacao || !estoque) {
+        if (
+            !titulo ||
+            !autor ||
+            !genero ||
+            !anoPublicacao ||
+            !estoque ||
+            !descricao
+        ) {
 
             setMensagemFlash('Preencha todos os campos.');
             setTipoFlash('erro');
@@ -42,7 +50,7 @@ export default function EditarLivro() {
 
         if (Number(estoque) < 1) {
 
-            setMensagemFlash('O estoque mínimo é 1 livro ');
+            setMensagemFlash('O estoque mínimo é 1 livro');
             setTipoFlash('erro');
 
             return;
@@ -57,6 +65,7 @@ export default function EditarLivro() {
             formData.append('genero', genero);
             formData.append('ano_publicacao', anoPublicacao);
             formData.append('estoque', estoque);
+            formData.append('descricao', descricao);
 
             if (imagem) {
                 formData.append('imagem', imagem);
@@ -85,6 +94,7 @@ export default function EditarLivro() {
 
                 setMensagemFlash(data.error);
                 setTipoFlash('erro');
+
             }
 
         } catch (erro) {
@@ -128,7 +138,12 @@ export default function EditarLivro() {
                     {
                         preview ? (
                             <img
-                                src={`http://127.0.0.1:5000/uploads/Livros/${livro.id_livro}.jpg`}                                alt="Preview"
+                                src={
+                                    imagem
+                                        ? preview
+                                        : `http://127.0.0.1:5000/uploads/Livros/${livro.id_livro}.jpg`
+                                }
+                                alt="Preview"
                                 className={estilos.previewImagem}
                             />
                         ) : (
@@ -151,6 +166,7 @@ export default function EditarLivro() {
                 <div className={estilos.areaInputs}>
 
                     <div className={estilos.grupoInput}>
+
                         <label>Título</label>
 
                         <input
@@ -158,9 +174,11 @@ export default function EditarLivro() {
                             value={titulo}
                             onChange={(e) => setTitulo(e.target.value)}
                         />
+
                     </div>
 
                     <div className={estilos.grupoInput}>
+
                         <label>Autor</label>
 
                         <input
@@ -168,9 +186,11 @@ export default function EditarLivro() {
                             value={autor}
                             onChange={(e) => setAutor(e.target.value)}
                         />
+
                     </div>
 
                     <div className={estilos.grupoInput}>
+
                         <label>Gênero</label>
 
                         <input
@@ -178,9 +198,11 @@ export default function EditarLivro() {
                             value={genero}
                             onChange={(e) => setGenero(e.target.value)}
                         />
+
                     </div>
 
                     <div className={estilos.grupoInput}>
+
                         <label>Ano de Publicação</label>
 
                         <input
@@ -195,9 +217,11 @@ export default function EditarLivro() {
                                 }
                             }}
                         />
+
                     </div>
 
                     <div className={estilos.grupoInput}>
+
                         <label>Estoque</label>
 
                         <input
@@ -212,6 +236,23 @@ export default function EditarLivro() {
                                 }
                             }}
                         />
+
+                    </div>
+
+                    <div className={estilos.grupoInput}>
+
+                        <label>Descrição</label>
+
+                        <textarea
+                            value={descricao}
+                            onChange={(e) =>
+                                setDescricao(e.target.value)
+                            }
+                            rows={5}
+                            placeholder="Digite uma descrição do livro..."
+                            className={estilos.textarea}
+                        />
+
                     </div>
 
                     <button

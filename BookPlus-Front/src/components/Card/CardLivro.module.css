@@ -118,6 +118,10 @@
     color: #DC2626;
 }
 
+.linkCard {
+    text-decoration: none;
+    color: inherit;
+}
 
 @media (max-width: 768px) {
     .card {
@@ -156,6 +160,13 @@
         font-size: 11px;
         margin-left: 0;
         margin-bottom: 12px;
+    }
+
+    .estoque{
+        font-size: 11px;
+        margin-left: 0;
+        margin-bottom: 12px;
+        margin-top: -8px;
     }
 
 

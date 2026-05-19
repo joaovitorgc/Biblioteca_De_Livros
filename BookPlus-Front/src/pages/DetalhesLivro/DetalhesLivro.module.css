@@ -1,0 +1,199 @@
+.container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px 20px;
+    box-sizing: border-box;
+}
+
+.cardLivro {
+    width: 100%;
+    max-width: 1200px;
+    background-color: #ffffff;
+    border-radius: 24px;
+    padding: 40px;
+    display: flex;
+    gap: 50px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.imageContainer {
+    flex-shrink: 0;
+}
+
+.capa {
+    width: 270px;
+    height: 420px;
+    object-fit: cover;
+    border-radius: 18px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.titulo {
+    font-size: 28px;
+    font-weight: 750;
+    color: #111827;
+    margin-bottom: 10px;
+}
+
+.autor {
+    font-size: 18px;
+    color: #6B7280;
+    margin-bottom: 20px;
+}
+
+.badges {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.genero,
+.ano {
+    background-color: #EFF6FF;
+
+    color: #2563EB;
+
+    padding: 8px 16px;
+
+    border-radius: 999px;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.estoque {
+    font-size: 18px;
+    font-weight: 700;
+
+    margin-bottom: 30px;
+}
+
+.comEstoque {
+    color: #15803D;
+}
+
+.semEstoque {
+    color: #DC2626;
+}
+
+.descricaoContainer {
+    margin-bottom: 40px;
+}
+
+.subtitulo {
+    font-size: 19px;
+    font-weight: 750;
+    color: #111827;
+    margin-bottom: 14px;
+}
+
+.descricao {
+    font-size: 16px;
+    line-height: 1.9;
+    color: #4B5563;
+    text-align: justify;
+}
+
+.botaoReservar {
+    width: 190px;
+    height: 45px;
+    border: none;
+    border-radius: 14px;
+    background-color: #2563EB;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.botaoReservar:hover {
+    transform: translateY(-2px);
+
+    filter: brightness(1.05);
+}
+
+.reservado {
+    background-color: #16A34A;
+}
+
+.esgotado {
+    background-color: #DC2626;
+}
+
+.botaoReservar:disabled {
+    cursor: not-allowed;
+
+    opacity: 0.9;
+}
+
+@media (max-width: 900px) {
+
+    .cardLivro {
+        flex-direction: column;
+        align-items: center;
+
+        padding: 30px;
+    }
+
+    .info {
+        width: 100%;
+    }
+
+    .titulo {
+        font-size: 32px;
+
+        text-align: center;
+    }
+
+    .autor {
+        text-align: center;
+    }
+
+    .badges {
+        justify-content: center;
+    }
+
+    .estoque {
+        text-align: center;
+    }
+
+    .botaoReservar {
+        width: 100%;
+    }
+}
+
+@media (max-width: 500px) {
+
+    .container {
+        padding: 30px 15px;
+    }
+
+    .cardLivro {
+        padding: 20px;
+    }
+
+    .capa {
+        width: 100%;
+        max-width: 260px;
+
+        height: auto;
+    }
+
+    .titulo {
+        font-size: 26px;
+    }
+
+    .descricao {
+        font-size: 15px;
+    }
+}

@@ -585,38 +585,59 @@ def listar_usuarios():
 
 @app.route("/cadastrar_livro", methods=['POST'])
 def cadastrar_livro():
+
     cursor = con.cursor()
 
     try:
+
         titulo = request.form.get('titulo')
         autor = request.form.get('autor')
         genero = request.form.get('genero')
         ano_publicacao = request.form.get('ano_publicacao')
         estoque = request.form.get('estoque')
+        descricao = request.form.get('descricao')
 
         imagem = request.files.get('imagem')
 
-        if not titulo or not autor or not genero or not ano_publicacao or not estoque or not imagem:
+        if (
+            not titulo
+            or not autor
+            or not genero
+            or not ano_publicacao
+            or not estoque
+            or not descricao
+            or not imagem
+        ):
+
             return jsonify({
                 'error': 'Todos os campos são obrigatórios.'
             }), 400
 
         cursor.execute("""
             INSERT INTO livro (
+
                 titulo,
                 autor,
                 genero,
                 ano_publicacao,
-                estoque
+                estoque,
+                descricao
+
             )
-            VALUES (?, ?, ?, ?, ?)
+
+            VALUES (?, ?, ?, ?, ?, ?)
+
             RETURNING id_livro
+
         """, (
+
             titulo,
             autor,
             genero,
             ano_publicacao,
-            estoque
+            estoque,
+            descricao
+
         ))
 
         id_livro = cursor.fetchone()[0]
@@ -624,6 +645,7 @@ def cadastrar_livro():
         con.commit()
 
         if imagem:
+
             nome_imagem = f"{id_livro}.jpg"
 
             caminho_imagem_destino = os.path.join(
@@ -632,29 +654,38 @@ def cadastrar_livro():
                 "Livros"
             )
 
-            os.makedirs(caminho_imagem_destino, exist_ok=True)
+            os.makedirs(
+                caminho_imagem_destino,
+                exist_ok=True
+            )
 
             caminho_imagem = os.path.join(
                 caminho_imagem_destino,
                 nome_imagem
             )
+
             imagem.save(caminho_imagem)
 
         return jsonify({
-            'mensagem': 'Livro cadastrado com sucesso!',
+
+            'mensagem':
+                'Livro cadastrado com sucesso!',
+
             'livro': {
                 'titulo': titulo,
                 'autor': autor,
                 'genero': genero,
                 'ano_publicacao': ano_publicacao,
-                'estoque': estoque
+                'estoque': estoque,
+                'descricao': descricao
             }
         }), 201
-
     except Exception as e:
         print(e)
         con.rollback()
-        return jsonify({'error': 'Erro ao cadastrar o livro.'}), 500
+        return jsonify({
+            'error': 'Erro ao cadastrar o livro.'
+        }), 500
     finally:
         cursor.close()
 
@@ -744,6 +775,8 @@ def deletar_livro(id):
     except Exception as e:
         con.rollback()
         return jsonify({"error": "Internal server error"}), 500
+
+
 @app.route("/editar_livro/<int:id_livro>", methods=['PUT'])
 def editar_livro(id_livro):
 
@@ -756,10 +789,18 @@ def editar_livro(id_livro):
         genero = request.form.get('genero')
         ano_publicacao = request.form.get('ano_publicacao')
         estoque = request.form.get('estoque')
+        descricao = request.form.get('descricao')
 
         imagem = request.files.get('imagem')
 
-        if not titulo or not autor or not genero or not ano_publicacao or not estoque:
+        if (
+            not titulo
+            or not autor
+            or not genero
+            or not ano_publicacao
+            or not estoque
+            or not descricao
+        ):
 
             return jsonify({
                 'error': 'Todos os campos são obrigatórios.'
@@ -772,7 +813,8 @@ def editar_livro(id_livro):
                 autor = ?,
                 genero = ?,
                 ano_publicacao = ?,
-                estoque = ?
+                estoque = ?,
+                descricao = ?
             WHERE id_livro = ?
         """, (
             titulo,
@@ -780,6 +822,7 @@ def editar_livro(id_livro):
             genero,
             ano_publicacao,
             estoque,
+            descricao,
             id_livro
         ))
 
@@ -819,6 +862,7 @@ def editar_livro(id_livro):
         }), 500
 
     finally:
+
         cursor.close()
 
 
@@ -1415,6 +1459,75 @@ def meus_emprestimos(id_usuario):
 
         return jsonify({
             "emprestimos": lista_emprestimos
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "erro": True,
+            "mensagem": str(e)
+        }), 500
+
+    finally:
+
+        cur.close()
+
+@app.route('/livro/<int:id_livro>', methods=['GET'])
+def buscar_livro(id_livro):
+
+    cur = con.cursor()
+
+    try:
+
+        cur.execute("""
+
+            SELECT
+                ID_LIVRO,
+                TITULO,
+                AUTOR,
+                GENERO,
+                ANO_PUBLICACAO,
+                ESTOQUE,
+                DESCRICAO
+
+            FROM LIVRO
+
+            WHERE ID_LIVRO = ?
+
+        """, (id_livro,))
+
+        livro = cur.fetchone()
+
+        if not livro:
+
+            return jsonify({
+                "erro": True,
+                "mensagem": "Livro não encontrado."
+            }), 404
+
+        descricao = ""
+
+        if livro[6]:
+
+            descricao = livro[6]
+
+            if hasattr(descricao, "read"):
+                descricao = descricao.read()
+
+        return jsonify({
+
+            "livro": {
+
+                "id_livro": livro[0],
+                "titulo": livro[1],
+                "autor": livro[2],
+                "genero": livro[3],
+                "ano_publicacao": livro[4],
+                "estoque": livro[5],
+                "descricao": descricao
+
+            }
+
         })
 
     except Exception as e:

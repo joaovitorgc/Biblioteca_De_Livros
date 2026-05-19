@@ -5,6 +5,8 @@ import estilo from './CardLivro.module.css';
 import FlashMessage from '../FlashMessage/FlashMessage';
 import ConfirmModal from '../ConfirmModal/ConfirmModal';
 
+import { Link } from 'react-router-dom';
+
 export default function CardLivro({ id, titulo, autor, estoque }) {
 
     const [emprestado, setEmprestado] = useState(false);
@@ -123,65 +125,78 @@ export default function CardLivro({ id, titulo, autor, estoque }) {
                 onCancel={() => setModalAberto(false)}
             />
 
-            <div className={estilo.card}>
+            <Link
+                to={`/livro/${id}`}
+                className={estilo.linkCard}
+            >
 
-                <div className={estilo.imageContainer}>
-                    <img
-                        src={"http://127.0.0.1:5000/uploads/livros/" + id + ".jpg"}
-                        className={estilo.capa}
-                    />
-                </div>
+                <div className={estilo.card}>
 
-                <div className={estilo.infoContainer}>
+                    <div className={estilo.imageContainer}>
+                        <img
+                            src={"http://127.0.0.1:5000/uploads/livros/" + id + ".jpg"}
+                            className={estilo.capa}
+                        />
+                    </div>
 
-                    <h3 className={estilo.titulo}>
-                        {titulo}
-                    </h3>
+                    <div className={estilo.infoContainer}>
 
-                    <p className={estilo.autor}>
-                        {autor}
-                    </p>
+                        <h3 className={estilo.titulo}>
+                            {titulo}
+                        </h3>
 
-                    <p
-                        className={`
-                            ${estilo.estoque}
-                            ${estoque <= 0 ? estilo.semEstoque : estilo.comEstoque}
-                        `}
-                    >
-                        {
-                            estoque <= 0
-                                ? "Indisponível"
-                                : estoque === 1
-                                    ? "1 disponível"
-                                    : `${estoque} disponíveis`
-                        }
-                    </p>
+                        <p className={estilo.autor}>
+                            {autor}
+                        </p>
 
-                    <div className={estilo.footer}>
-
-                        <button
+                        <p
                             className={`
-                                ${estilo.botaoEmprestar}
-                                ${emprestado ? estilo.emprestado : ""}
-                                ${estoque <= 0 ? estilo.esgotado : ""}
+                                ${estilo.estoque}
+                                ${estoque <= 0 ? estilo.semEstoque : estilo.comEstoque}
                             `}
-                            onClick={() => setModalAberto(true)}
-                            disabled={emprestado || estoque <= 0}
                         >
                             {
                                 estoque <= 0
-                                    ? "ESGOTADO"
-                                    : emprestado
-                                        ? "RESERVADO"
-                                        : "RESERVAR"
+                                    ? "Indisponível"
+                                    : estoque === 1
+                                        ? "1 disponível"
+                                        : `${estoque} disponíveis`
                             }
-                        </button>
+                        </p>
+
+                        <div className={estilo.footer}>
+
+                            <button
+                                className={`
+                                    ${estilo.botaoEmprestar}
+                                    ${emprestado ? estilo.emprestado : ""}
+                                    ${estoque <= 0 ? estilo.esgotado : ""}
+                                `}
+                                onClick={(e) => {
+
+                                    e.preventDefault();
+
+                                    setModalAberto(true);
+
+                                }}
+                                disabled={emprestado || estoque <= 0}
+                            >
+                                {
+                                    estoque <= 0
+                                        ? "ESGOTADO"
+                                        : emprestado
+                                            ? "RESERVADO"
+                                            : "RESERVAR"
+                                }
+                            </button>
+
+                        </div>
 
                     </div>
 
                 </div>
 
-            </div>
+            </Link>
         </>
     );
 }

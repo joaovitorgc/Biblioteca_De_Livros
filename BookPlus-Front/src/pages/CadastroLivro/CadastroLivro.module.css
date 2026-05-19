@@ -132,6 +132,32 @@
     transform: scale(1.03);
 }
 
+.textarea {
+    width: 100%;
+    min-height: 130px;
+    padding: 14px 16px;
+    border: 2px solid #dbe3f0;
+    border-radius: 14px;
+    background: #f9fbff;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: #1e293b;
+    resize: vertical;
+    transition: 0.2s ease;
+    outline: none;
+    line-height: 1.6;
+}
+
+.textarea:focus {
+    border-color: #1e3a8a;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.12);
+}
+
+.textarea::placeholder {
+    color: #94a3b8;
+}
+
 @media (max-width: 768px) {
 
     .formulario {

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import estilos from './CadastroLivro.module.css';
 import css from "../Cadastro/Cadastro.module.css";
 import FlashMessage from "../../components/FlashMessage/FlashMessage.jsx";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function CadastroLivro() {
 
@@ -13,6 +13,8 @@ export default function CadastroLivro() {
     const [genero, setGenero] = useState('');
     const [anoPublicacao, setAnoPublicacao] = useState('');
     const [estoque, setEstoque] = useState('');
+    const [descricao, setDescricao] = useState('');
+
     const [imagem, setImagem] = useState(null);
     const [preview, setPreview] = useState(null);
 
@@ -23,9 +25,19 @@ export default function CadastroLivro() {
 
         e.preventDefault();
 
-        if (!titulo || !autor || !genero || !anoPublicacao || !estoque) {
+        if (
+            !titulo
+            || !autor
+            || !genero
+            || !anoPublicacao
+            || !estoque
+            || !descricao
+        ) {
 
-            setMensagemFlash('Preencha todos os campos.');
+            setMensagemFlash(
+                'Preencha todos os campos.'
+            );
+
             setTipoFlash('erro');
 
             return;
@@ -33,7 +45,10 @@ export default function CadastroLivro() {
 
         if (Number(estoque) < 1) {
 
-            setMensagemFlash('O estoque mínimo é 1 livro 📚');
+            setMensagemFlash(
+                'O estoque mínimo é 1 livro 📚'
+            );
+
             setTipoFlash('erro');
 
             return;
@@ -48,21 +63,33 @@ export default function CadastroLivro() {
             formData.append('genero', genero);
             formData.append('ano_publicacao', anoPublicacao);
             formData.append('estoque', estoque);
+            formData.append('descricao', descricao);
 
             if (imagem) {
-                formData.append('imagem', imagem);
+
+                formData.append(
+                    'imagem',
+                    imagem
+                );
             }
 
-            const response = await fetch('http://127.0.0.1:5000/cadastrar_livro', {
-                method: 'POST',
-                body: formData
-            });
+            const response = await fetch(
+                'http://127.0.0.1:5000/cadastrar_livro',
+                {
+                    method: 'POST',
+                    body: formData
+                }
+            );
 
             const data = await response.json();
 
             if (response.ok) {
 
-                setMensagemFlash(data.mensagem || 'Livro cadastrado com sucesso!');
+                setMensagemFlash(
+                    data.mensagem
+                    || 'Livro cadastrado com sucesso!'
+                );
+
                 setTipoFlash('sucesso');
 
                 setTitulo('');
@@ -70,14 +97,24 @@ export default function CadastroLivro() {
                 setGenero('');
                 setAnoPublicacao('');
                 setEstoque('');
+                setDescricao('');
+
                 setImagem(null);
                 setPreview(null);
 
-                setTimeout(() => navigate("/AdminLivros"), 1500)
+                setTimeout(() => {
+
+                    navigate("/AdminLivros");
+
+                }, 1500);
 
             } else {
 
-                setMensagemFlash(data.error || 'Erro ao cadastrar livro.');
+                setMensagemFlash(
+                    data.error
+                    || 'Erro ao cadastrar livro.'
+                );
+
                 setTipoFlash('erro');
 
             }
@@ -86,7 +123,10 @@ export default function CadastroLivro() {
 
             console.log(erro);
 
-            setMensagemFlash('Erro ao conectar com o servidor.');
+            setMensagemFlash(
+                'Erro ao conectar com o servidor.'
+            );
+
             setTipoFlash('erro');
         }
     }
@@ -98,7 +138,10 @@ export default function CadastroLivro() {
         if (arquivo) {
 
             setImagem(arquivo);
-            setPreview(URL.createObjectURL(arquivo));
+
+            setPreview(
+                URL.createObjectURL(arquivo)
+            );
         }
     }
 
@@ -121,16 +164,20 @@ export default function CadastroLivro() {
 
                     {
                         preview ? (
+
                             <img
                                 src={preview}
                                 alt="Preview"
                                 className={estilos.previewImagem}
                             />
+
                         ) : (
+
                             <img
                                 src="/icone_foto.png"
                                 className={css.iconeUpload}
                             />
+
                         )
                     }
 
@@ -146,55 +193,97 @@ export default function CadastroLivro() {
                 <div className={estilos.areaInputs}>
 
                     <div className={estilos.grupoInput}>
+
                         <label>Título</label>
 
                         <input
                             type="text"
                             value={titulo}
-                            onChange={(e) => setTitulo(e.target.value)}
+                            onChange={(e) =>
+                                setTitulo(e.target.value)
+                            }
                         />
+
                     </div>
 
                     <div className={estilos.grupoInput}>
+
                         <label>Autor</label>
 
                         <input
                             type="text"
                             value={autor}
-                            onChange={(e) => setAutor(e.target.value)}
+                            onChange={(e) =>
+                                setAutor(e.target.value)
+                            }
                         />
+
                     </div>
 
                     <div className={estilos.grupoInput}>
+
                         <label>Gênero</label>
 
                         <input
                             type="text"
                             value={genero}
-                            onChange={(e) => setGenero(e.target.value)}
+                            onChange={(e) =>
+                                setGenero(e.target.value)
+                            }
                         />
+
                     </div>
 
                     <div className={estilos.grupoInput}>
-                        <label>Ano de Publicação</label>
+
+                        <label>
+                            Ano de Publicação
+                        </label>
 
                         <input
                             type="number"
                             value={anoPublicacao}
-                            onChange={(e) => setAnoPublicacao(e.target.value)}
                             min={1}
+                            onChange={(e) =>
+                                setAnoPublicacao(
+                                    e.target.value
+                                )
+                            }
                         />
+
                     </div>
 
                     <div className={estilos.grupoInput}>
+
                         <label>Estoque</label>
 
                         <input
                             type="number"
                             value={estoque}
                             min={1}
-                            onChange={(e) => setEstoque(e.target.value)}
+                            onChange={(e) =>
+                                setEstoque(
+                                    e.target.value
+                                )
+                            }
                         />
+
+                    </div>
+
+                    <div className={estilos.grupoInput}>
+
+                        <label>Descrição</label>
+
+                        <textarea
+                            value={descricao}
+                            onChange={(e) =>
+                                setDescricao(e.target.value)
+                            }
+                            rows={5}
+                            placeholder="Digite uma descrição do livro..."
+                            className={estilos.textarea}
+                        />
+
                     </div>
 
                     <button
