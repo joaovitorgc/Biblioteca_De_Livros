@@ -142,6 +142,21 @@ export default function CardLivro({ id, titulo, autor, estoque }) {
                         {autor}
                     </p>
 
+                    <p
+                        className={`
+                            ${estilo.estoque}
+                            ${estoque <= 0 ? estilo.semEstoque : estilo.comEstoque}
+                        `}
+                    >
+                        {
+                            estoque <= 0
+                                ? "Indisponível"
+                                : estoque === 1
+                                    ? "1 disponível"
+                                    : `${estoque} disponíveis`
+                        }
+                    </p>
+
                     <div className={estilo.footer}>
 
                         <button

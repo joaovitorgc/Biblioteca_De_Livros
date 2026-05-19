@@ -104,6 +104,20 @@
     background-color: #8b0000 !important;
 }
 
+.estoque {
+    font-size: 12.9px;
+    font-weight: 500;
+    margin: -16px 0 14px -14px;
+}
+
+.comEstoque {
+    color: #1e9126;
+}
+
+.semEstoque {
+    color: #DC2626;
+}
+
 
 @media (max-width: 768px) {
     .card {
