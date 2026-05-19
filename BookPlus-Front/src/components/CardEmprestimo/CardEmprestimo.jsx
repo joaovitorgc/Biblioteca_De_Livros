@@ -9,9 +9,48 @@ export default function CardEmprestimo({
                                            email,
                                            estoque,
                                            emprestados,
+                                           dataReserva,
+                                           dataLimiteReserva,
                                            dataDevolucao,
-                                           aoDevolver
+                                           status,
+                                           aoAtualizar
                                        }) {
+
+    async function confirmarRetirada() {
+
+        try {
+
+            const resposta = await fetch(
+                `http://127.0.0.1:5000/confirmar_retirada/${idEmprestimo}`,
+                {
+                    method: "PUT",
+                    credentials: "include"
+                }
+            );
+
+            const dados = await resposta.json();
+
+            if (dados.erro) {
+
+                alert(dados.mensagem);
+
+                return;
+            }
+
+            alert(dados.mensagem);
+
+            if (aoAtualizar) {
+                aoAtualizar();
+            }
+
+        } catch (erro) {
+
+            console.log(erro);
+
+            alert("Erro ao confirmar retirada.");
+
+        }
+    }
 
     async function devolverLivro() {
 
@@ -36,8 +75,8 @@ export default function CardEmprestimo({
 
             alert(dados.mensagem);
 
-            if (aoDevolver) {
-                aoDevolver();
+            if (aoAtualizar) {
+                aoAtualizar();
             }
 
         } catch (erro) {
@@ -50,44 +89,99 @@ export default function CardEmprestimo({
     }
 
     return (
+
         <div className={estilos.card}>
 
             <img
-                src={"http://127.0.0.1:5000/uploads/livros/" + id + ".jpg"}
+                src={
+                    "http://127.0.0.1:5000/uploads/livros/" + id + ".jpg"
+                }
                 className={estilos.capa}
             />
 
             <div className={estilos.info}>
 
                 <p>
-                    Estoque: {estoque}
+                    <span>Estoque:</span> {estoque}
                 </p>
 
                 <p>
-                    Emprestados: {emprestados}
+                    <span>Reservados:</span> {emprestados}
                 </p>
 
                 <p>
-                    Usuário: {usuario}
+                    <span>Usuário:</span> {usuario}
                 </p>
 
                 <p>
-                    Email: {email}
+                    <span>Email:</span> {email}
                 </p>
 
                 <p>
-                    Data De Devolução: {dataDevolucao}
+                    <span>Data da Reserva:</span> {dataReserva}
                 </p>
 
-                <button
-                    className={estilos.botao}
-                    onClick={devolverLivro}
-                >
-                    Devolver
-                </button>
+                {
+                    status === "reservado"
+                        ? (
+                            <p>
+                                <span>Retirar até:</span> {dataLimiteReserva}
+                            </p>
+                        )
+                        : (
+                            <p>
+                                <span>Devolução:</span> {dataDevolucao}
+                            </p>
+                        )
+                }
+
+                <div className={estilos.statusContainer}>
+
+                    {
+                        status === "reservado"
+                            ? (
+                                <div className={estilos.statusReservado}>
+                                    RESERVADO
+                                </div>
+                            )
+                            : (
+                                <div className={estilos.statusRetirado}>
+                                    RETIRADO
+                                </div>
+                            )
+                    }
+
+                </div>
+
+                {
+                    status === "reservado" && (
+
+                        <button
+                            className={estilos.btnRetirada}
+                            onClick={confirmarRetirada}
+                        >
+                            Confirmar Retirada
+                        </button>
+
+                    )
+                }
+
+                {
+                    status === "retirado" && (
+
+                        <button
+                            className={estilos.botao}
+                            onClick={devolverLivro}
+                        >
+                            Devolver
+                        </button>
+
+                  )
+                }
 
             </div>
 
         </div>
+
     );
 }

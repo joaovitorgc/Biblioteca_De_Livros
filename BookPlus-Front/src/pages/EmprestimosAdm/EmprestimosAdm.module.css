@@ -138,6 +138,22 @@
     filter: brightness(0.95);
 }
 
+.btnRetirada {
+    margin-top: 15px;
+    background-color: #1d4ed8;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-weight: 700;
+}
+
+.btnRetirada:hover {
+    opacity: 0.85;
+}
+
 /* RESPONSIVIDADE */
 
 @media (max-width: 768px) {

@@ -19,15 +19,17 @@ export default function AdminEmprestimos() {
     const [erro, setErro] = useState('');
 
     const [mensagem, setMensagem] = useState("");
+
     const [tipo, setTipo] = useState("");
 
     const [totalUsuarios, setTotalUsuarios] = useState(0);
+
     const [totalLivros, setTotalLivros] = useState(0);
 
     const dadosEstatisticas = [
         {
             id: 1,
-            titulo: "Total De Empréstimos",
+            titulo: "Total De Reservas",
             valor: emprestimos.length
         },
         {
@@ -115,12 +117,13 @@ export default function AdminEmprestimos() {
             );
 
             if (!response.ok) {
-                throw new Error('Falha ao buscar empréstimos');
+
+                throw new Error(
+                    'Falha ao buscar empréstimos'
+                );
             }
 
             const data = await response.json();
-
-            console.log(data);
 
             setEmprestimos(data.emprestimos);
 
@@ -135,6 +138,48 @@ export default function AdminEmprestimos() {
         } finally {
 
             setLoading(false);
+
+        }
+    }
+
+    async function confirmarRetirada(id_emprestimo) {
+
+        try {
+
+            const resposta = await fetch(
+                `http://127.0.0.1:5000/confirmar_retirada/${id_emprestimo}`,
+                {
+                    method: "PUT",
+                    credentials: "include"
+                }
+            );
+
+            const dados = await resposta.json();
+
+            if (dados.erro) {
+
+                setMensagem(dados.mensagem);
+
+                setTipo("erro");
+
+                return;
+            }
+
+            setMensagem(dados.mensagem);
+
+            setTipo("sucesso");
+
+            buscarEmprestimos();
+
+        } catch (erro) {
+
+            console.log(erro);
+
+            setMensagem(
+                "Erro ao confirmar retirada."
+            );
+
+            setTipo("erro");
 
         }
     }
@@ -156,12 +201,14 @@ export default function AdminEmprestimos() {
             if (dados.erro) {
 
                 setMensagem(dados.mensagem);
+
                 setTipo("erro");
 
                 return;
             }
 
             setMensagem(dados.mensagem);
+
             setTipo("sucesso");
 
             buscarEmprestimos();
@@ -170,7 +217,10 @@ export default function AdminEmprestimos() {
 
             console.log(erro);
 
-            setMensagem("Erro ao devolver livro.");
+            setMensagem(
+                "Erro ao devolver livro."
+            );
+
             setTipo("erro");
 
         }
@@ -179,7 +229,9 @@ export default function AdminEmprestimos() {
     useEffect(() => {
 
         buscarUsuarios();
+
         buscarLivros();
+
         buscarEmprestimos();
 
     }, []);
@@ -232,7 +284,7 @@ export default function AdminEmprestimos() {
 
             {loading ? (
 
-                <p>Carregando empréstimos...</p>
+                <p>Carregando reservas...</p>
 
             ) : (
 
@@ -256,35 +308,105 @@ export default function AdminEmprestimos() {
                                 <div className={estilos.emprestimoInfo}>
 
                                     <p>
-                                        <span>Estoque:</span> {emprestimo.estoque}
+                                        <span>Usuário:</span>{" "}
+                                        {emprestimo.usuario}
                                     </p>
 
                                     <p>
-                                        <span>Emprestados:</span> {emprestimo.emprestados}
+                                        <span>Email:</span>{" "}
+                                        {emprestimo.email}
                                     </p>
 
                                     <p>
-                                        <span>Usuário:</span> {emprestimo.usuario}
+                                        <span>Estoque:</span>{" "}
+                                        {emprestimo.estoque}
                                     </p>
 
                                     <p>
-                                        <span>Email:</span> {emprestimo.email}
+                                        <span>Reservados:</span>{" "}
+                                        {emprestimo.emprestados}
                                     </p>
 
                                     <p>
-                                        <span>Data De Devolução:</span> {emprestimo.data_devolucao}
+                                        <span>Status:</span>{" "}
+                                        {emprestimo.status}
                                     </p>
 
-                                    <button
-                                        className={estilos.btnDevolver}
-                                        onClick={() =>
-                                            devolverLivro(
-                                                emprestimo.id_emprestimo
-                                            )
-                                        }
-                                    >
-                                        Devolver
-                                    </button>
+                                    <p>
+                                        <span>Data Reserva:</span>{" "}
+                                        {emprestimo.data_reserva}
+                                    </p>
+
+                                    {
+                                        emprestimo.status === "RESERVADO" && (
+                                            <p>
+                                                <span>
+                                                    Retirar até:
+                                                </span>{" "}
+                                                {
+                                                    emprestimo.data_limite_retirada
+                                                }
+                                            </p>
+                                        )
+                                    }
+
+                                    {
+                                        emprestimo.status === "RETIRADO" && (
+                                            <>
+                                                <p>
+                                                    <span>
+                                                        Retirado em:
+                                                    </span>{" "}
+                                                    {
+                                                        emprestimo.data_retirada
+                                                    }
+                                                </p>
+
+                                                <p>
+                                                    <span>
+                                                        Devolver até:
+                                                    </span>{" "}
+                                                    {
+                                                        emprestimo.data_devolucao
+                                                    }
+                                                </p>
+                                            </>
+                                        )
+                                    }
+
+                                    {
+                                        emprestimo.status === "RESERVADO" ? (
+
+                                            <button
+                                                className={
+                                                    estilos.btnRetirada
+                                                }
+                                                onClick={() =>
+                                                    confirmarRetirada(
+                                                        emprestimo.id_emprestimo
+                                                    )
+                                                }
+                                            >
+                                                Confirmar Retirada
+                                            </button>
+
+                                        ) : (
+
+                                            <button
+                                                className={
+                                                    estilos.btnDevolver
+                                                }
+                                                onClick={() =>
+                                                    devolverLivro(
+                                                        emprestimo.id_emprestimo
+                                                    )
+                                                }
+                                            >
+                                                Devolver
+                                            </button>
+
+                                        )
+                                    }
 
                                 </div>
 
@@ -294,7 +416,9 @@ export default function AdminEmprestimos() {
 
                     ) : (
 
-                        <p>Nenhum empréstimo encontrado.</p>
+                        <p>
+                            Nenhuma reserva encontrada.
+                        </p>
 
                     )}
 

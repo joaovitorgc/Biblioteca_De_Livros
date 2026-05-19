@@ -1,18 +1,14 @@
 .card {
     width: 100%;
-
     display: flex;
     gap: 20px;
-
     padding-bottom: 20px;
-
     border-bottom: 1px solid #999;
 }
 
 .capa {
     width: 130px;
     height: 180px;
-
     object-fit: cover;
 }
 
@@ -20,28 +16,57 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
-
     font-size: 14px;
 }
 
 .botao {
     width: 140px;
-
     margin-top: 20px;
-
     padding: 10px;
-
     border: none;
-
     border-radius: 6px;
-
     background-color: #7df07d;
-
     cursor: pointer;
-
     transition: 0.2s;
 }
 
 .botao:hover {
     opacity: 0.8;
+}
+
+.statusContainer {
+    margin-top: 10px;
+}
+
+.statusReservado {
+    background-color: #facc15;
+    color: #000;
+    padding: 6px 12px;
+    border-radius: 6px;
+    width: fit-content;
+    font-weight: 700;
+}
+
+.statusRetirado {
+    background-color: #2563eb;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    width: fit-content;
+    font-weight: 700;
+}
+
+.btnRetirada {
+    margin-top: 15px;
+    background-color: #1d4ed8;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btnRetirada:hover {
+    opacity: 0.85;
 }

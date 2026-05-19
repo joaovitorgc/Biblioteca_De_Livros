@@ -84,7 +84,7 @@ export default function ReservasUsuario() {
                 </h1>
 
                 <p className={estilos.subtitulo}>
-                    Visualize todos os livros reservados
+                    Visualize seus livros reservados
                 </p>
 
             </div>
@@ -129,16 +129,46 @@ export default function ReservasUsuario() {
 
                                 <p>
                                     <span>Reservado em:</span>{" "}
-                                    {livro.data_emprestimo}
+                                    {livro.data_reserva}
                                 </p>
 
-                                <p>
-                                    <span>Devolução:</span>{" "}
-                                    {livro.data_devolucao}
-                                </p>
+                                {
+                                    livro.status === "RESERVADO" && (
+                                        <p>
+                                            <span>Retirar até:</span>{" "}
+                                            {livro.data_limite_retirada}
+                                        </p>
+                                    )
+                                }
 
-                                <div className={estilos.status}>
-                                    RESERVADO
+                                {
+                                    livro.status === "RETIRADO" && (
+                                        <>
+                                            <p>
+                                                <span>Retirado em:</span>{" "}
+                                                {livro.data_retirada}
+                                            </p>
+
+                                            <p>
+                                                <span>Devolver até:</span>{" "}
+                                                {livro.data_devolucao}
+                                            </p>
+                                        </>
+                                    )
+                                }
+
+                                <div
+                                    className={`
+                                        ${estilos.status}
+
+                                        ${
+                                        livro.status === "RESERVADO"
+                                            ? estilos.reservado
+                                            : estilos.retirado
+                                    }
+                                    `}
+                                >
+                                    {livro.status}
                                 </div>
 
                             </div>

@@ -833,41 +833,64 @@ def realizar_emprestimo():
         dados = request.get_json()
 
         id_livro = dados.get("id_livro")
+
         id_usuario = dados.get("id_usuario")
 
         if not id_livro or not id_usuario:
+
             return jsonify({
                 "erro": True,
                 "mensagem": "Dados inválidos."
             }), 400
 
-        # VERIFICA SE O USUÁRIO JÁ PEGOU ESSE LIVRO
+        # VERIFICA SE O USUÁRIO
+        # JÁ POSSUI ESSE LIVRO
+
         cursor.execute("""
+
             SELECT ID_EMPRESTIMO
+
             FROM EMPRESTIMOS
-            WHERE ID_USUARIO = ?
-            AND ID_LIVRO = ?
-            AND DATA_DEVOLUCAO_REAL IS NULL
-        """, (id_usuario, id_livro))
 
-        emprestimo_ativo = cursor.fetchone()
+            WHERE
+                ID_USUARIO = ?
+                AND ID_LIVRO = ?
+                AND STATUS IN (
+                    'RESERVADO',
+                    'RETIRADO'
+                )
 
-        if emprestimo_ativo:
+        """, (
+            id_usuario,
+            id_livro
+        ))
+
+        reserva_ativa = cursor.fetchone()
+
+        if reserva_ativa:
+
             return jsonify({
                 "erro": True,
-                "mensagem": "Você já possui esse livro emprestado."
+                "mensagem":
+                    "Você já possui esse livro reservado."
             }), 400
 
         # VERIFICA ESTOQUE
+
         cursor.execute("""
+
             SELECT ESTOQUE
+
             FROM LIVRO
+
             WHERE ID_LIVRO = ?
+
         """, (id_livro,))
 
         livro = cursor.fetchone()
 
         if not livro:
+
             return jsonify({
                 "erro": True,
                 "mensagem": "Livro não encontrado."
@@ -876,45 +899,80 @@ def realizar_emprestimo():
         estoque = livro[0]
 
         if estoque <= 0:
+
             return jsonify({
                 "erro": True,
                 "mensagem": "Livro indisponível."
             }), 400
 
-        data_emprestimo = datetime.now().date()
-        data_devolucao_prevista = data_emprestimo + timedelta(days=7)
+        # DATAS
 
-        # CRIA EMPRÉSTIMO
+        data_reserva = datetime.now().date()
+
+        data_limite_reserva = (
+            data_reserva + timedelta(days=1)
+        )
+
+        # CRIA RESERVA
+
         cursor.execute("""
+
             INSERT INTO EMPRESTIMOS (
+
                 ID_LIVRO,
                 ID_USUARIO,
                 DATA_EMPRESTIMO,
-                DATA_DEVOLUCAO_PREVISTA
+                DATA_LIMITE_RESERVA,
+                STATUS
+
             )
-            VALUES (?, ?, ?, ?)
+
+            VALUES (?, ?, ?, ?, ?)
+
         """, (
+
             id_livro,
             id_usuario,
-            data_emprestimo,
-            data_devolucao_prevista
+            data_reserva,
+            data_limite_reserva,
+            'RESERVADO'
+
         ))
 
         # DIMINUI ESTOQUE
+
         cursor.execute("""
+
             UPDATE LIVRO
+
             SET ESTOQUE = ESTOQUE - 1
+
             WHERE ID_LIVRO = ?
+
         """, (id_livro,))
 
         con.commit()
 
         return jsonify({
+
             "erro": False,
-            "mensagem": "Reserva realizada com sucesso."
+
+            "mensagem":
+                "Reserva realizada com sucesso.",
+
+            "status":
+                "RESERVADO",
+
+            "data_limite_reserva":
+                data_limite_reserva.strftime(
+                    "%d/%m/%Y"
+                )
+
         }), 201
 
     except Exception as e:
+
+        print(e)
 
         con.rollback()
 
@@ -922,6 +980,10 @@ def realizar_emprestimo():
             "erro": True,
             "mensagem": str(e)
         }), 500
+
+    finally:
+
+        cursor.close()
 
 @app.route("/verificar-emprestimo/<int:id_usuario>/<int:id_livro>", methods=["GET"])
 def verificar_emprestimo(id_usuario, id_livro):
@@ -931,12 +993,23 @@ def verificar_emprestimo(id_usuario, id_livro):
     try:
 
         cursor.execute("""
+
             SELECT ID_EMPRESTIMO
+
             FROM EMPRESTIMOS
-            WHERE ID_USUARIO = ?
-            AND ID_LIVRO = ?
-            AND DATA_DEVOLUCAO_REAL IS NULL
-        """, (id_usuario, id_livro))
+
+            WHERE
+                ID_USUARIO = ?
+                AND ID_LIVRO = ?
+                AND STATUS IN (
+                    'RESERVADO',
+                    'RETIRADO'
+                )
+
+        """, (
+            id_usuario,
+            id_livro
+        ))
 
         emprestimo = cursor.fetchone()
 
@@ -951,6 +1024,11 @@ def verificar_emprestimo(id_usuario, id_livro):
             "mensagem": str(e)
         }), 500
 
+    finally:
+
+        cursor.close()
+
+
 @app.route('/listar_emprestimos', methods=['GET'])
 def listar_emprestimos():
 
@@ -963,16 +1041,31 @@ def listar_emprestimos():
             SELECT
                 e.ID_EMPRESTIMO,
                 e.ID_LIVRO,
+
                 u.NOME,
                 u.EMAIL,
+
                 l.ESTOQUE,
+
+                e.DATA_EMPRESTIMO,
+                e.DATA_LIMITE_RESERVA,
+                e.DATA_RETIRADA,
                 e.DATA_DEVOLUCAO_PREVISTA,
+
+                e.STATUS,
 
                 (
                     SELECT COUNT(*)
+
                     FROM EMPRESTIMOS emp
-                    WHERE emp.ID_LIVRO = l.ID_LIVRO
-                    AND emp.DATA_DEVOLUCAO_REAL IS NULL
+
+                    WHERE
+                        emp.ID_LIVRO = l.ID_LIVRO
+                        AND emp.STATUS IN (
+                            'RESERVADO',
+                            'RETIRADO'
+                        )
+
                 ) AS EMPRESTADOS
 
             FROM EMPRESTIMOS e
@@ -983,7 +1076,12 @@ def listar_emprestimos():
             INNER JOIN LIVRO l
             ON l.ID_LIVRO = e.ID_LIVRO
 
-            WHERE e.DATA_DEVOLUCAO_REAL IS NULL
+            WHERE e.STATUS IN (
+                'RESERVADO',
+                'RETIRADO'
+            )
+
+            ORDER BY e.ID_EMPRESTIMO DESC
 
         """)
 
@@ -996,16 +1094,42 @@ def listar_emprestimos():
             lista_emprestimos.append({
 
                 "id_emprestimo": emprestimo[0],
+
                 "id_livro": emprestimo[1],
+
                 "usuario": emprestimo[2],
+
                 "email": emprestimo[3],
+
                 "estoque": emprestimo[4],
-                "data_devolucao": (
+
+                "data_reserva": (
                     emprestimo[5].strftime("%d/%m/%Y")
                     if emprestimo[5]
                     else ""
                 ),
-                "emprestados": emprestimo[6]
+
+                "DATA_LIMITE_RESERVA": (
+                    emprestimo[6].strftime("%d/%m/%Y")
+                    if emprestimo[6]
+                    else ""
+                ),
+
+                "data_retirada": (
+                    emprestimo[7].strftime("%d/%m/%Y")
+                    if emprestimo[7]
+                    else ""
+                ),
+
+                "data_devolucao": (
+                    emprestimo[8].strftime("%d/%m/%Y")
+                    if emprestimo[8]
+                    else ""
+                ),
+
+                "status": emprestimo[9],
+
+                "emprestados": emprestimo[10]
 
             })
 
@@ -1024,6 +1148,95 @@ def listar_emprestimos():
 
         cur.close()
 
+
+@app.route('/confirmar_retirada/<int:id_emprestimo>', methods=['PUT'])
+def confirmar_retirada(id_emprestimo):
+
+    cur = con.cursor()
+
+    try:
+
+        cur.execute("""
+
+            SELECT STATUS
+
+            FROM EMPRESTIMOS
+
+            WHERE ID_EMPRESTIMO = ?
+
+        """, (id_emprestimo,))
+
+        emprestimo = cur.fetchone()
+
+        if not emprestimo:
+
+            return jsonify({
+                "erro": True,
+                "mensagem": "Reserva não encontrada."
+            }), 404
+
+        status = emprestimo[0]
+
+        if status != "RESERVADO":
+
+            return jsonify({
+                "erro": True,
+                "mensagem":
+                    "Somente reservas podem ser retiradas."
+            }), 400
+
+        data_retirada = datetime.now().date()
+
+        data_devolucao_prevista = (
+            data_retirada + timedelta(days=7)
+        )
+
+        cur.execute("""
+
+            UPDATE EMPRESTIMOS
+
+            SET
+                STATUS = 'RETIRADO',
+                DATA_RETIRADA = ?,
+                DATA_DEVOLUCAO_PREVISTA = ?
+
+            WHERE ID_EMPRESTIMO = ?
+
+        """, (
+
+            data_retirada,
+
+            data_devolucao_prevista,
+
+            id_emprestimo
+
+        ))
+
+        con.commit()
+
+        return jsonify({
+
+            "erro": False,
+
+            "mensagem":
+                "Retirada confirmada com sucesso."
+
+        })
+
+    except Exception as e:
+
+        con.rollback()
+
+        return jsonify({
+            "erro": True,
+            "mensagem": str(e)
+        }), 500
+
+    finally:
+
+        cur.close()
+
+
 @app.route('/devolver_livro/<int:id_emprestimo>', methods=['PUT'])
 def devolver_livro(id_emprestimo):
 
@@ -1031,12 +1244,11 @@ def devolver_livro(id_emprestimo):
 
     try:
 
-        # VERIFICA SE O EMPRÉSTIMO EXISTE
         cur.execute("""
 
             SELECT
                 ID_LIVRO,
-                DATA_DEVOLUCAO_REAL
+                STATUS
 
             FROM EMPRESTIMOS
 
@@ -1055,28 +1267,28 @@ def devolver_livro(id_emprestimo):
 
         id_livro = emprestimo[0]
 
-        devolvido = emprestimo[1]
+        status = emprestimo[1]
 
-        # VÊ SE JÁ FOI DEVOLVIDO
-        if devolvido is not None:
+        if status != "RETIRADO":
 
             return jsonify({
                 "erro": True,
-                "mensagem": "Este livro já foi devolvido."
+                "mensagem":
+                    "O livro ainda não foi retirado."
             }), 400
 
-        # ATUALIZA A DATA DE DEVOLUÇÃO
         cur.execute("""
 
             UPDATE EMPRESTIMOS
 
-            SET DATA_DEVOLUCAO_REAL = CURRENT_DATE
+            SET
+                STATUS = 'DEVOLVIDO',
+                DATA_DEVOLUCAO_REAL = CURRENT_DATE
 
             WHERE ID_EMPRESTIMO = ?
 
         """, (id_emprestimo,))
 
-        # DEVOLVE 1 LIVRO PRO ESTOQUE
         cur.execute("""
 
             UPDATE LIVRO
@@ -1090,8 +1302,12 @@ def devolver_livro(id_emprestimo):
         con.commit()
 
         return jsonify({
+
             "erro": False,
-            "mensagem": "Livro devolvido com sucesso."
+
+            "mensagem":
+                "Livro devolvido com sucesso."
+
         })
 
     except Exception as e:
@@ -1107,6 +1323,7 @@ def devolver_livro(id_emprestimo):
 
         cur.close()
 
+
 @app.route('/meus_emprestimos/<int:id_usuario>', methods=['GET'])
 def meus_emprestimos(id_usuario):
 
@@ -1117,12 +1334,24 @@ def meus_emprestimos(id_usuario):
         cur.execute("""
 
             SELECT
+
                 e.ID_EMPRESTIMO,
+
                 e.ID_LIVRO,
+
                 l.TITULO,
+
                 l.AUTOR,
+
                 e.DATA_EMPRESTIMO,
-                e.DATA_DEVOLUCAO_PREVISTA
+
+                e.DATA_LIMITE_RESERVA,
+
+                e.DATA_RETIRADA,
+
+                e.DATA_DEVOLUCAO_PREVISTA,
+
+                e.STATUS
 
             FROM EMPRESTIMOS e
 
@@ -1131,7 +1360,12 @@ def meus_emprestimos(id_usuario):
 
             WHERE
                 e.ID_USUARIO = ?
-                AND e.DATA_DEVOLUCAO_REAL IS NULL
+                AND e.STATUS IN (
+                    'RESERVADO',
+                    'RETIRADO'
+                )
+
+            ORDER BY e.ID_EMPRESTIMO DESC
 
         """, (id_usuario,))
 
@@ -1144,19 +1378,38 @@ def meus_emprestimos(id_usuario):
             lista_emprestimos.append({
 
                 "id_emprestimo": emprestimo[0],
+
                 "id_livro": emprestimo[1],
+
                 "titulo": emprestimo[2],
+
                 "autor": emprestimo[3],
-                "data_emprestimo": (
+
+                "data_reserva": (
                     emprestimo[4].strftime("%d/%m/%Y")
                     if emprestimo[4]
                     else ""
                 ),
-                "data_devolucao": (
+
+                "DATA_LIMITE_RESERVA": (
                     emprestimo[5].strftime("%d/%m/%Y")
                     if emprestimo[5]
                     else ""
-                )
+                ),
+
+                "data_retirada": (
+                    emprestimo[6].strftime("%d/%m/%Y")
+                    if emprestimo[6]
+                    else ""
+                ),
+
+                "data_devolucao": (
+                    emprestimo[7].strftime("%d/%m/%Y")
+                    if emprestimo[7]
+                    else ""
+                ),
+
+                "status": emprestimo[8]
 
             })
 
