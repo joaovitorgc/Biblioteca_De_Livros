@@ -911,7 +911,7 @@ def realizar_emprestimo():
 
         return jsonify({
             "erro": False,
-            "mensagem": "Empréstimo realizado com sucesso."
+            "mensagem": "Reserva realizada com sucesso."
         }), 201
 
     except Exception as e:
@@ -997,18 +997,14 @@ def listar_emprestimos():
 
                 "id_emprestimo": emprestimo[0],
                 "id_livro": emprestimo[1],
-
                 "usuario": emprestimo[2],
                 "email": emprestimo[3],
-
                 "estoque": emprestimo[4],
-
                 "data_devolucao": (
                     emprestimo[5].strftime("%d/%m/%Y")
                     if emprestimo[5]
                     else ""
                 ),
-
                 "emprestados": emprestimo[6]
 
             })

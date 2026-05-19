@@ -142,8 +142,8 @@ export default function CardLivro({ id, titulo, autor, estoque }) {
                                 estoque <= 0
                                     ? "ESGOTADO"
                                     : emprestado
-                                        ? "EMPRESTADO"
-                                        : "EMPRÉSTIMO"
+                                        ? "RESERVADO"
+                                        : "RESERVAR"
                             }
                         </button>
 
