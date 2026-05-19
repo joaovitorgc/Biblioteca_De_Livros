@@ -148,7 +148,7 @@ export default function Header() {
                         to="/"
                         onClick={fecharMenu}
                     >
-                        HOME
+                        ACERVO
                     </Link>
 
                     {!usuario ? (

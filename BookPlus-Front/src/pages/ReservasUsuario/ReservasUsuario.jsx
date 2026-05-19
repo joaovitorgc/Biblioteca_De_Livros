@@ -136,7 +136,7 @@ export default function ReservasUsuario() {
                                     livro.status === "RESERVADO" && (
                                         <p>
                                             <span>Retirar até:</span>{" "}
-                                            {livro.data_limite_retirada}
+                                            {livro.DATA_LIMITE_RESERVA}
                                         </p>
                                     )
                                 }
