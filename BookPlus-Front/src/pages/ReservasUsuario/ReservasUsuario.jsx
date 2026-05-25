@@ -4,6 +4,8 @@ import estilos from './ReservasUsuario.module.css';
 
 import FlashMessage from '../../components/FlashMessage/FlashMessage.jsx';
 
+import ModalPix from '../../components/ModalPix/ModalPix.jsx';
+
 export default function ReservasUsuario() {
 
     const [reservas, setReservas] = useState([]);
@@ -13,6 +15,10 @@ export default function ReservasUsuario() {
     const [mensagem, setMensagem] = useState("");
 
     const [tipoMensagem, setTipoMensagem] = useState("");
+
+    const [modalPixAberto, setModalPixAberto] = useState(false);
+
+    const [idEmprestimoPix, setIdEmprestimoPix] = useState(null);
 
     useEffect(() => {
 
@@ -49,7 +55,20 @@ export default function ReservasUsuario() {
                 return;
             }
 
-            setReservas(dados.emprestimos);
+            setReservas(
+                dados.emprestimos.filter((livro) => {
+
+                    if (
+                        livro.multa > 0 &&
+                        livro.multa_paga === 1
+                    ) {
+                        return false;
+                    }
+
+                    return true;
+
+                })
+            );
 
         } catch (erro) {
 
@@ -75,6 +94,13 @@ export default function ReservasUsuario() {
                 mensagem={mensagem}
                 tipo={tipoMensagem}
                 onClose={() => setMensagem("")}
+            />
+
+            <ModalPix
+                aberto={modalPixAberto}
+                onClose={() => setModalPixAberto(false)}
+                idEmprestimo={idEmprestimoPix}
+                aoPagar={buscarReservas}
             />
 
             <div className={estilos.topo}>
@@ -154,6 +180,39 @@ export default function ReservasUsuario() {
                                                 {livro.data_devolucao}
                                             </p>
                                         </>
+                                    )
+                                }
+
+                                {
+                                    livro.multa > 0 &&
+                                    livro.multa_paga === 0 && (
+
+                                        <div className={estilos.areaMulta}>
+
+                                            <p className={estilos.textoMulta}>
+                                                Multa pendente:
+                                                <span>
+                                                    {" "}
+                                                    R$ {livro.multa}
+                                                </span>
+                                            </p>
+
+                                            <button
+                                                className={estilos.botaoPagar}
+                                                onClick={() => {
+
+                                                    setIdEmprestimoPix(
+                                                        livro.id_emprestimo
+                                                    );
+
+                                                    setModalPixAberto(true);
+
+                                                }}
+                                            >
+                                                PAGAR MULTA
+                                            </button>
+
+                                        </div>
                                     )
                                 }
 

@@ -344,7 +344,7 @@ export default function AdminEmprestimos() {
                                                     Retirar até:
                                                 </span>{" "}
                                                 {
-                                                    emprestimo.data_limite_retirada
+                                                    emprestimo.DATA_LIMITE_RESERVA
                                                 }
                                             </p>
                                         )

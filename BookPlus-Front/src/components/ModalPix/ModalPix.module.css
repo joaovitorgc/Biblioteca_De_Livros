@@ -1,0 +1,233 @@
+.overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.modal{
+    width: 420px;
+    background: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+}
+
+.fechar{
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    border: none;
+    background: transparent;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.titulo{
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.valor{
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.valor span{
+    margin-left: 8px;
+}
+
+.qrcode{
+    width: 250px;
+    height: 250px;
+    object-fit: contain;
+}
+
+.pix{
+    width: 100%;
+    height: 90px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    padding: 12px;
+    resize: none;
+    font-size: 13px;
+}
+
+.botaoConfirmar{
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: 12px;
+    background: #000;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.botaoConfirmar:hover{
+    opacity: .85;
+}
+
+.overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 9999;
+    overflow-y: auto;
+}
+
+.modal{
+    width: 100%;
+    max-width: 420px;
+    background: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    box-sizing: border-box;
+}
+
+.fechar{
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    border: none;
+    background: transparent;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.titulo{
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.valor{
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    word-break: break-word;
+}
+
+.valor span{
+    margin-left: 8px;
+}
+
+.qrcode{
+    width: 100%;
+    max-width: 250px;
+    aspect-ratio: 1/1;
+    object-fit: contain;
+}
+
+.pix{
+    width: 100%;
+    min-height: 90px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    padding: 12px;
+    resize: none;
+    font-size: 13px;
+    box-sizing: border-box;
+    word-break: break-word;
+}
+
+.botaoConfirmar{
+    width: 100%;
+    min-height: 50px;
+    border: none;
+    border-radius: 12px;
+    background: #000;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.botaoConfirmar:hover{
+    opacity: .85;
+}
+
+@media (max-width: 768px){
+
+    .modal{
+        padding: 25px 20px;
+        border-radius: 18px;
+    }
+
+    .titulo{
+        font-size: 24px;
+    }
+
+    .valor{
+        font-size: 18px;
+    }
+
+    .qrcode{
+        max-width: 220px;
+    }
+
+    .botaoConfirmar{
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px){
+
+    .overlay{
+        padding: 12px;
+        align-items: flex-end;
+    }
+
+    .modal{
+        max-width: 100%;
+        padding: 22px 16px;
+        border-radius: 16px 16px 0 0;
+        gap: 16px;
+        max-height: 96%;
+    }
+
+    .titulo{
+        font-size: 21px;
+    }
+
+    .valor{
+        font-size: 16px;
+    }
+
+    .qrcode{
+        max-width: 180px;
+    }
+
+    .pix{
+        font-size: 12px;
+        min-height: 80px;
+    }
+
+    .botaoConfirmar{
+        min-height: 48px;
+        font-size: 15px;
+    }
+
+    .fechar{
+        font-size: 26px;
+    }
+}

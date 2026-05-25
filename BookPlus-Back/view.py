@@ -13,9 +13,17 @@ from flask import make_response
 from flask import jsonify
 from funcao import gerar_token
 
+import qrcode
+import base64
+from io import BytesIO
+
 import threading
 from flask import request
 from main import app, con
+from funcao import (
+    gerar_payload_pix,
+    format_field,
+    crc16)
 
 # from flask import Flask
 
@@ -1292,7 +1300,8 @@ def devolver_livro(id_emprestimo):
 
             SELECT
                 ID_LIVRO,
-                STATUS
+                STATUS,
+                DATA_DEVOLUCAO_PREVISTA
 
             FROM EMPRESTIMOS
 
@@ -1313,6 +1322,8 @@ def devolver_livro(id_emprestimo):
 
         status = emprestimo[1]
 
+        data_devolucao_prevista = emprestimo[2]
+
         if status != "RETIRADO":
 
             return jsonify({
@@ -1321,17 +1332,39 @@ def devolver_livro(id_emprestimo):
                     "O livro ainda não foi retirado."
             }), 400
 
+        data_atual = datetime.now().date()
+
+        multa = 0
+
+        dias_atraso = 0
+
+        if data_devolucao_prevista and data_atual > data_devolucao_prevista:
+
+            dias_atraso = (
+                data_atual - data_devolucao_prevista
+            ).days
+
+            multa = 10
+
+            multa += 10 * (0.01 * dias_atraso)
+
+            multa = round(multa, 2)
+
         cur.execute("""
 
             UPDATE EMPRESTIMOS
 
             SET
                 STATUS = 'DEVOLVIDO',
-                DATA_DEVOLUCAO_REAL = CURRENT_DATE
+                DATA_DEVOLUCAO_REAL = CURRENT_DATE,
+                MULTA = ?
 
             WHERE ID_EMPRESTIMO = ?
 
-        """, (id_emprestimo,))
+        """, (
+            multa,
+            id_emprestimo
+        ))
 
         cur.execute("""
 
@@ -1345,12 +1378,25 @@ def devolver_livro(id_emprestimo):
 
         con.commit()
 
+        mensagem = "Livro devolvido com sucesso."
+
+        if multa > 0:
+
+            mensagem += (
+                f" Multa por atraso: "
+                f"R$ {multa:.2f} "
+                f"({dias_atraso} dias de atraso)."
+            )
+
         return jsonify({
 
             "erro": False,
 
-            "mensagem":
-                "Livro devolvido com sucesso."
+            "mensagem": mensagem,
+
+            "multa": multa,
+
+            "dias_atraso": dias_atraso
 
         })
 
@@ -1395,7 +1441,11 @@ def meus_emprestimos(id_usuario):
 
                 e.DATA_DEVOLUCAO_PREVISTA,
 
-                e.STATUS
+                e.STATUS,
+
+                e.MULTA,
+
+                e.MULTA_PAGA
 
             FROM EMPRESTIMOS e
 
@@ -1404,9 +1454,16 @@ def meus_emprestimos(id_usuario):
 
             WHERE
                 e.ID_USUARIO = ?
-                AND e.STATUS IN (
-                    'RESERVADO',
-                    'RETIRADO'
+                AND (
+                    e.STATUS IN (
+                        'RESERVADO',
+                        'RETIRADO'
+                    )
+
+                    OR (
+                        e.MULTA > 0
+                        AND e.MULTA_PAGA = 0
+                    )
                 )
 
             ORDER BY e.ID_EMPRESTIMO DESC
@@ -1453,11 +1510,18 @@ def meus_emprestimos(id_usuario):
                     else ""
                 ),
 
-                "status": emprestimo[8]
+                "status": emprestimo[8],
+
+                "multa": float(emprestimo[9])
+                if emprestimo[9]
+                else 0,
+
+                "multa_paga": emprestimo[10]
 
             })
 
         return jsonify({
+            "erro": False,
             "emprestimos": lista_emprestimos
         })
 
@@ -1535,6 +1599,181 @@ def buscar_livro(id_livro):
         return jsonify({
             "erro": True,
             "mensagem": str(e)
+        }), 500
+
+    finally:
+
+        cur.close()
+
+@app.route(
+    '/pagar_multa/<int:id_emprestimo>',
+    methods=['GET', 'PUT']
+)
+def pagar_multa(id_emprestimo):
+
+    cur = con.cursor()
+
+    try:
+
+        # =========================
+        # GERAR QR CODE PIX
+        # =========================
+
+        if request.method == 'GET':
+
+            cur.execute("""
+
+                SELECT
+                    MULTA,
+                    MULTA_PAGA
+
+                FROM EMPRESTIMOS
+
+                WHERE ID_EMPRESTIMO = ?
+
+            """, (id_emprestimo,))
+
+            emprestimo = cur.fetchone()
+
+            if not emprestimo:
+
+                return jsonify({
+                    "erro": True,
+                    "mensagem":
+                        "Empréstimo não encontrado."
+                }), 404
+
+            multa = emprestimo[0]
+
+            multa_paga = emprestimo[1]
+
+            if multa_paga == 1:
+
+                return jsonify({
+                    "erro": True,
+                    "mensagem":
+                        "Multa já foi paga."
+                }), 400
+
+            if not multa or multa <= 0:
+
+                return jsonify({
+                    "erro": True,
+                    "mensagem":
+                        "Nenhuma multa pendente."
+                }), 400
+
+            payload_pix = gerar_payload_pix(
+
+                chave="50625936892",
+
+                nome="BOOKPLUS",
+
+                cidade="BIRIGUI",
+
+                valor=float(multa),
+
+                txid=f"BOOK{id_emprestimo}"
+
+            )
+
+            qr = qrcode.make(payload_pix)
+
+            buffer = BytesIO()
+
+            qr.save(buffer, format="PNG")
+
+            qr_base64 = base64.b64encode(
+                buffer.getvalue()
+            ).decode()
+
+            return jsonify({
+                "erro": False,
+                "valor_multa": multa,
+                "pix_copia_cola": payload_pix,
+                "qr_code":
+                    f"data:image/png;base64,{qr_base64}"
+            })
+
+
+        elif request.method == 'PUT':
+
+            cur.execute("""
+
+                SELECT
+                    MULTA,
+                    MULTA_PAGA
+
+                FROM EMPRESTIMOS
+
+                WHERE ID_EMPRESTIMO = ?
+
+            """, (id_emprestimo,))
+
+            emprestimo = cur.fetchone()
+
+            if not emprestimo:
+
+                return jsonify({
+                    "erro": True,
+                    "mensagem":
+                        "Empréstimo não encontrado."
+                }), 404
+
+            multa = emprestimo[0]
+
+            multa_paga = emprestimo[1]
+
+            if multa_paga == 1:
+
+                return jsonify({
+                    "erro": True,
+                    "mensagem":
+                        "Multa já paga."
+                }), 400
+
+            if not multa or multa <= 0:
+
+                return jsonify({
+                    "erro": True,
+                    "mensagem":
+                        "Nenhuma multa pendente."
+                }), 400
+
+            cur.execute("""
+
+                UPDATE EMPRESTIMOS
+
+                SET
+                    MULTA_PAGA = 1
+
+                WHERE ID_EMPRESTIMO = ?
+
+            """, (id_emprestimo,))
+
+            con.commit()
+
+            return jsonify({
+
+                "erro": False,
+
+                "mensagem":
+                    "Pagamento confirmado com sucesso."
+
+            })
+
+    except Exception as e:
+
+        print("ERRO PIX:", e)
+
+        con.rollback()
+
+        return jsonify({
+
+            "erro": True,
+
+            "mensagem": str(e)
+
         }), 500
 
     finally:
