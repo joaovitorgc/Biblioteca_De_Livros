@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import estilos from './AdminRelatorios.module.css';
 
-// Importações dos componentes compartilhados
 import AbasNavegacao from "../../components/AbasNavegacao/AbasNavegacao.jsx";
 import CartaoEstatistica from "../../components/CartaoEstatistica/CartaoEstatistica.jsx";
 import FlashMessage from "../../components/FlashMessage/FlashMessage.jsx";
 
-// Subcomponente modular para os Cards de Relatório
+
 function CartaoRelatorio({ titulo, descricao, icon, onClick, baixando }) {
     return (
         <div className={estilos.relatorioCard}>
@@ -30,12 +29,11 @@ function CartaoRelatorio({ titulo, descricao, icon, onClick, baixando }) {
 export default function AdminRelatorios() {
     const navigate = useNavigate();
 
-    // Estados para controle de dados e estatísticas
+    // Dados e estatísticas
     const [totalUsuarios, setTotalUsuarios] = useState(0);
     const [totalLivros, setTotalLivros] = useState(0);
     const [totalReservas, setTotalReservas] = useState(0);
 
-    // Estados para controle de UI
     const [baixandoRelatorio, setBaixandoRelatorio] = useState({});
     const [mensagem, setMensagem] = useState("");
     const [tipo, setTipo] = useState("");
@@ -46,7 +44,7 @@ export default function AdminRelatorios() {
         { id: 3, titulo: "Livros Cadastrados", valor: totalLivros }
     ];
 
-    // Configuração dos relatórios disponíveis na página
+    // Relatórios na página
     const listaRelatorios = [
         {
             id: 'livros_mais_emprestados',
@@ -80,7 +78,7 @@ export default function AdminRelatorios() {
         navigate(rotas[aba] || '/');
     };
 
-    // Buscas de estatísticas para manter o topo idêntico à página de empréstimos
+
     async function buscarUsuarios() {
         try {
             let resposta = await fetch("http://127.0.0.1:5000/listar_usuarios", {
@@ -194,9 +192,9 @@ export default function AdminRelatorios() {
             />
 
             <div className={estilos.secaoRelatorios}>
-                <h2 className={estilos.subtitulo}>Central de Relatórios Gerenciais</h2>
+                <h2 className={estilos.subtitulo}>Relatórios Gerenciais</h2>
                 <p className={estilos.descricaoSecao}>
-                    Selecione uma das opções abaixo para realizar a exportação dos dados consolidados em formato PDF.
+                    Selecione uma das opções abaixo para realizar o Donwload dos dados em formato PDF.
                 </p>
 
                 <div className={estilos.gradeRelatorios}>

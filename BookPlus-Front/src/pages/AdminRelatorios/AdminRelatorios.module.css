@@ -26,7 +26,7 @@
 
 .secaoRelatorios {
     background-color: #ffffff;
-    border-radius: 8px;
+    border-radius: 15px;
     padding: 30px;
     margin-top: 25px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -54,9 +54,11 @@
     display: flex;
     background-color: #f9fbfd;
     border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    border-radius: 10px;
     padding: 20px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition:
+            transform 0.2s,
+            box-shadow 0.2s;
 }
 
 .relatorioCard:hover {
@@ -67,53 +69,160 @@
 .relatorioIcone {
     font-size: 2.5rem;
     margin-right: 18px;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
+    flex-shrink: 0;
 }
 
 .relatorioInfo {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+
     width: 100%;
 }
 
 .relatorioInfo h3 {
     font-size: 1.15rem;
     color: #1a3c5e;
+
     margin: 0 0 8px 0;
+
     font-weight: bold;
 }
 
 .relatorioInfo p {
     font-size: 0.88rem;
     color: #555555;
+
     margin: 0 0 16px 0;
+
     line-height: 1.4;
+
     flex-grow: 1;
 }
 
 .btnDownload {
     background-color: #1a3c5e;
     color: #ffffff;
+
     border: none;
+
     padding: 10px 16px;
-    border-radius: 5px;
+
+    border-radius: 6px;
+
     font-weight: bold;
+
     cursor: pointer;
+
     font-size: 0.88rem;
-    transition: background-color 0.2s, opacity 0.2s;
-    text-align: center;
-    width: 100%;
+
+    font-family: 'Montserrat', sans-serif;
+
+    transition:
+            background-color 0.2s,
+            opacity 0.2s,
+            transform 0.2s;
 }
 
 .btnDownload:hover:not(:disabled) {
     background-color: #122b44;
+    transform: scale(1.02);
 }
 
 .btnDownload:disabled {
     background-color: #a0aec0;
     cursor: not-allowed;
     opacity: 0.7;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 768px) {
+
+    .container {
+        padding: 30px 15px;
+    }
+
+    .secaoRelatorios {
+        padding: 20px;
+    }
+
+    .gradeRelatorios {
+        grid-template-columns: 1fr;
+    }
+
+    .relatorioCard {
+        flex-direction: column;
+        align-items: center;
+
+        text-align: center;
+    }
+
+    .relatorioIcone {
+        margin-right: 0;
+        margin-bottom: 15px;
+
+        font-size: 3rem;
+    }
+
+    .relatorioInfo {
+        align-items: center;
+    }
+
+    .relatorioInfo h3 {
+        font-size: 1rem;
+    }
+
+    .relatorioInfo p {
+        font-size: 0.85rem;
+    }
+
+    .btnDownload {
+        width: 100%;
+        max-width: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .tituloPagina {
+        font-size: 1rem;
+    }
+
+    .subtitulo {
+        font-size: 1.1rem;
+        text-align: center;
+    }
+
+    .descricaoSecao {
+        font-size: 0.85rem;
+        text-align: center;
+    }
+
+    .relatorioCard {
+        padding: 16px;
+    }
+
+    .relatorioIcone {
+        font-size: 2.5rem;
+    }
+
+    .relatorioInfo h3 {
+        font-size: 0.95rem;
+    }
+
+    .relatorioInfo p {
+        font-size: 0.8rem;
+    }
+
+    .btnDownload {
+        width: 100%;
+        font-size: 0.82rem;
+        padding: 10px;
+    }
 }
