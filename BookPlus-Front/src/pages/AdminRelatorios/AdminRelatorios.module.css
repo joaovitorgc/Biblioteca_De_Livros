@@ -1,0 +1,119 @@
+.container {
+    font-family: 'Montserrat', sans-serif;
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.tituloPagina {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 30px;
+    color: #000000;
+}
+
+.gradeEstatisticas {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.secaoRelatorios {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 30px;
+    margin-top: 25px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.subtitulo {
+    font-size: 1.4rem;
+    color: #1a3c5e;
+    margin-bottom: 8px;
+}
+
+.descricaoSecao {
+    color: #767676;
+    font-size: 0.95rem;
+    margin-bottom: 25px;
+}
+
+.gradeRelatorios {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.relatorioCard {
+    display: flex;
+    background-color: #f9fbfd;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.relatorioCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(26, 60, 94, 0.08);
+}
+
+.relatorioIcone {
+    font-size: 2.5rem;
+    margin-right: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.relatorioInfo {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.relatorioInfo h3 {
+    font-size: 1.15rem;
+    color: #1a3c5e;
+    margin: 0 0 8px 0;
+    font-weight: bold;
+}
+
+.relatorioInfo p {
+    font-size: 0.88rem;
+    color: #555555;
+    margin: 0 0 16px 0;
+    line-height: 1.4;
+    flex-grow: 1;
+}
+
+.btnDownload {
+    background-color: #1a3c5e;
+    color: #ffffff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.88rem;
+    transition: background-color 0.2s, opacity 0.2s;
+    text-align: center;
+    width: 100%;
+}
+
+.btnDownload:hover:not(:disabled) {
+    background-color: #122b44;
+}
+
+.btnDownload:disabled {
+    background-color: #a0aec0;
+    cursor: not-allowed;
+    opacity: 0.7;
+}

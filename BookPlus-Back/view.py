@@ -14,6 +14,8 @@ from flask import jsonify
 from funcao import gerar_token
 from funcao import email_reserva_confirmada
 from funcao import email_multa_atraso
+from fpdf import FPDF
+from flask import send_file
 
 import qrcode
 import base64
@@ -1786,4 +1788,284 @@ def pagar_multa(id_emprestimo):
 
     finally:
 
+        cur.close()
+
+
+# ─────────────────────────────────────────
+# RELATÓRIO 1 — Livros mais emprestados
+# ─────────────────────────────────────────
+@app.route('/relatorio/livros_mais_emprestados', methods=['GET'])
+def relatorio_livros_mais_emprestados():
+    cur = con.cursor()
+    try:
+        cur.execute("""
+            SELECT
+                l.TITULO,
+                l.AUTOR,
+                COUNT(e.ID_EMPRESTIMO) AS TOTAL
+            FROM EMPRESTIMOS e
+            INNER JOIN LIVRO l ON l.ID_LIVRO = e.ID_LIVRO
+            GROUP BY l.TITULO, l.AUTOR
+            ORDER BY TOTAL DESC
+        """)
+        livros = cur.fetchall()
+
+        if not livros:
+            return jsonify({"error": "Nenhum dado encontrado"}), 404
+
+        pdf = FPDF()
+        pdf.set_auto_page_break(auto=True, margin=15)
+        pdf.add_page()
+
+        # Cabeçalho
+        pdf.set_fill_color(26, 60, 94)
+        pdf.rect(0, 0, 210, 28, 'F')
+        pdf.set_font("Arial", style='B', size=18)
+        pdf.set_text_color(255, 255, 255)
+        pdf.cell(0, 28, "BookPlus - Livros Mais Emprestados", ln=True, align='C')
+
+        # Data
+        from datetime import datetime
+        pdf.set_font("Arial", size=9)
+        pdf.set_text_color(120, 120, 120)
+        pdf.cell(0, 8, f"Gerado em {datetime.now().strftime('%d/%m/%Y às %H:%M')}", ln=True, align='R')
+        pdf.ln(4)
+
+        # Cabeçalho da tabela
+        pdf.set_fill_color(240, 246, 255)
+        pdf.set_text_color(26, 60, 94)
+        pdf.set_font("Arial", style='B', size=10)
+        pdf.cell(10, 10, "#", border=1, align='C', fill=True)
+        pdf.cell(100, 10, "Título", border=1, align='C', fill=True)
+        pdf.cell(55, 10, "Autor", border=1, align='C', fill=True)
+        pdf.cell(25, 10, "Empréstimos", border=1, align='C', fill=True)
+        pdf.ln()
+
+        # Linhas
+        pdf.set_font("Arial", size=10)
+        for i, livro in enumerate(livros):
+            fill = i % 2 == 0
+            pdf.set_fill_color(249, 249, 249) if fill else pdf.set_fill_color(255, 255, 255)
+            pdf.set_text_color(50, 50, 50)
+            pdf.cell(10, 9, str(i + 1), border=1, align='C', fill=True)
+            pdf.cell(100, 9, str(livro[0])[:48], border=1, fill=True)
+            pdf.cell(55, 9, str(livro[1])[:28], border=1, fill=True)
+            pdf.set_font("Arial", style='B', size=10)
+            pdf.set_text_color(26, 60, 94)
+            pdf.cell(25, 9, str(livro[2]), border=1, align='C', fill=True)
+            pdf.set_font("Arial", size=10)
+            pdf.set_text_color(50, 50, 50)
+            pdf.ln()
+
+        # Total
+        pdf.ln(6)
+        pdf.set_font("Arial", style='B', size=11)
+        pdf.set_text_color(26, 60, 94)
+        pdf.cell(0, 10, f"Total de títulos no relatório: {len(livros)}", ln=True, align='C')
+
+        pdf_path = "relatorio_livros_mais_emprestados.pdf"
+        pdf.output(pdf_path)
+        return send_file(pdf_path, as_attachment=True, mimetype='application/pdf')
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+
+
+# ─────────────────────────────────────────
+# RELATÓRIO 2 — Empréstimos por mês
+# ─────────────────────────────────────────
+@app.route('/relatorio/emprestimos_por_mes', methods=['GET'])
+def relatorio_emprestimos_por_mes():
+    cur = con.cursor()
+    try:
+        cur.execute("""
+            SELECT
+                EXTRACT(YEAR FROM DATA_EMPRESTIMO)  AS ANO,
+                EXTRACT(MONTH FROM DATA_EMPRESTIMO) AS MES,
+                COUNT(*) AS TOTAL
+            FROM EMPRESTIMOS
+            GROUP BY ANO, MES
+            ORDER BY ANO DESC, MES DESC
+        """)
+        dados = cur.fetchall()
+
+        if not dados:
+            return jsonify({"error": "Nenhum dado encontrado"}), 404
+
+        MESES = {
+            1:'Janeiro', 2:'Fevereiro', 3:'Março', 4:'Abril',
+            5:'Maio', 6:'Junho', 7:'Julho', 8:'Agosto',
+            9:'Setembro', 10:'Outubro', 11:'Novembro', 12:'Dezembro'
+        }
+
+        pdf = FPDF()
+        pdf.set_auto_page_break(auto=True, margin=15)
+        pdf.add_page()
+
+        # Cabeçalho
+        pdf.set_fill_color(26, 60, 94)
+        pdf.rect(0, 0, 210, 28, 'F')
+        pdf.set_font("Arial", style='B', size=18)
+        pdf.set_text_color(255, 255, 255)
+        pdf.cell(0, 28, "BookPlus - Empréstimos por Mês", ln=True, align='C')
+
+        from datetime import datetime
+        pdf.set_font("Arial", size=9)
+        pdf.set_text_color(120, 120, 120)
+        pdf.cell(0, 8, f"Gerado em {datetime.now().strftime('%d/%m/%Y às %H:%M')}", ln=True, align='R')
+        pdf.ln(4)
+
+        # Cabeçalho tabela
+        pdf.set_fill_color(240, 246, 255)
+        pdf.set_text_color(26, 60, 94)
+        pdf.set_font("Arial", style='B', size=10)
+        pdf.cell(70, 10, "Mês", border=1, align='C', fill=True)
+        pdf.cell(40, 10, "Ano", border=1, align='C', fill=True)
+        pdf.cell(80, 10, "Total de Empréstimos", border=1, align='C', fill=True)
+        pdf.ln()
+
+        # Barra máxima para o gráfico
+        max_total = max(row[2] for row in dados)
+
+        pdf.set_font("Arial", size=10)
+        for i, row in enumerate(dados):
+            ano, mes, total = int(row[0]), int(row[1]), int(row[2])
+            fill = i % 2 == 0
+            pdf.set_fill_color(249, 249, 249) if fill else pdf.set_fill_color(255, 255, 255)
+            pdf.set_text_color(50, 50, 50)
+            pdf.cell(70, 9, MESES.get(mes, str(mes)), border=1, fill=True)
+            pdf.cell(40, 9, str(ano), border=1, align='C', fill=True)
+            pdf.set_font("Arial", style='B', size=10)
+            pdf.set_text_color(26, 60, 94)
+            pdf.cell(80, 9, str(total), border=1, align='C', fill=True)
+            pdf.set_font("Arial", size=10)
+            pdf.set_text_color(50, 50, 50)
+            pdf.ln()
+
+        # Gráfico de barras simples
+        pdf.ln(10)
+        pdf.set_font("Arial", style='B', size=12)
+        pdf.set_text_color(26, 60, 94)
+        pdf.cell(0, 10, "Gráfico de Empréstimos por Mês", ln=True, align='C')
+        pdf.ln(4)
+
+        bar_max_width = 130
+        bar_height = 7
+        x_label = 15
+        x_bar = 55
+
+        for row in reversed(dados[-12:]):  # últimos 12 meses
+            ano, mes, total = int(row[0]), int(row[1]), int(row[2])
+            label = f"{MESES.get(mes,'')[:3]}/{str(ano)[2:]}"
+            bar_width = int((total / max_total) * bar_max_width) if max_total > 0 else 0
+
+            pdf.set_font("Arial", size=8)
+            pdf.set_text_color(80, 80, 80)
+            pdf.set_xy(x_label, pdf.get_y())
+            pdf.cell(38, bar_height, label, align='R')
+
+            y = pdf.get_y()
+            pdf.set_fill_color(26, 60, 94)
+            pdf.rect(x_bar, y, bar_width if bar_width > 0 else 1, bar_height - 1, 'F')
+
+            pdf.set_xy(x_bar + bar_width + 2, y)
+            pdf.set_font("Arial", style='B', size=8)
+            pdf.set_text_color(26, 60, 94)
+            pdf.cell(20, bar_height, str(total))
+            pdf.ln(bar_height + 1)
+
+        pdf_path = "relatorio_emprestimos_por_mes.pdf"
+        pdf.output(pdf_path)
+        return send_file(pdf_path, as_attachment=True, mimetype='application/pdf')
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+
+
+# ─────────────────────────────────────────
+# RELATÓRIO 3 — Usuários que reservam e não buscam
+# ─────────────────────────────────────────
+@app.route('/relatorio/usuarios_nao_buscam', methods=['GET'])
+def relatorio_usuarios_nao_buscam():
+    cur = con.cursor()
+    try:
+        cur.execute("""
+            SELECT
+                u.NOME,
+                u.EMAIL,
+                COUNT(e.ID_EMPRESTIMO) AS TOTAL_CANCELADOS
+            FROM EMPRESTIMOS e
+            INNER JOIN USUARIOS u ON u.ID_USUARIO = e.ID_USUARIO
+            WHERE e.STATUS = 'CANCELADO'
+            GROUP BY u.NOME, u.EMAIL
+            ORDER BY TOTAL_CANCELADOS DESC
+        """)
+        usuarios = cur.fetchall()
+
+        if not usuarios:
+            return jsonify({"error": "Nenhum dado encontrado"}), 404
+
+        pdf = FPDF()
+        pdf.set_auto_page_break(auto=True, margin=15)
+        pdf.add_page()
+
+        # Cabeçalho
+        pdf.set_fill_color(26, 60, 94)
+        pdf.rect(0, 0, 210, 28, 'F')
+        pdf.set_font("Arial", style='B', size=16)
+        pdf.set_text_color(255, 255, 255)
+        pdf.cell(0, 28, "BookPlus - Usuarios com Reservas Canceladas", ln=True, align='C')
+
+        from datetime import datetime
+        pdf.set_font("Arial", size=9)
+        pdf.set_text_color(120, 120, 120)
+        pdf.cell(0, 8, f"Gerado em {datetime.now().strftime('%d/%m/%Y às %H:%M')}", ln=True, align='R')
+        pdf.ln(2)
+
+        pdf.set_font("Arial", size=10)
+        pdf.set_text_color(150, 60, 0)
+        pdf.cell(0, 8, "Usuários que realizaram reservas e não foram buscar o livro.", ln=True, align='C')
+        pdf.ln(4)
+
+        # Cabeçalho tabela
+        pdf.set_fill_color(240, 246, 255)
+        pdf.set_text_color(26, 60, 94)
+        pdf.set_font("Arial", style='B', size=10)
+        pdf.cell(10, 10, "#", border=1, align='C', fill=True)
+        pdf.cell(75, 10, "Nome", border=1, align='C', fill=True)
+        pdf.cell(80, 10, "Email", border=1, align='C', fill=True)
+        pdf.cell(25, 10, "Cancelados", border=1, align='C', fill=True)
+        pdf.ln()
+
+        pdf.set_font("Arial", size=10)
+        for i, usuario in enumerate(usuarios):
+            fill = i % 2 == 0
+            pdf.set_fill_color(249, 249, 249) if fill else pdf.set_fill_color(255, 255, 255)
+            pdf.set_text_color(50, 50, 50)
+            pdf.cell(10, 9, str(i + 1), border=1, align='C', fill=True)
+            pdf.cell(75, 9, str(usuario[0])[:35], border=1, fill=True)
+            pdf.cell(80, 9, str(usuario[1])[:38], border=1, fill=True)
+            pdf.set_font("Arial", style='B', size=10)
+            pdf.set_text_color(192, 57, 43)
+            pdf.cell(25, 9, str(usuario[2]), border=1, align='C', fill=True)
+            pdf.set_font("Arial", size=10)
+            pdf.set_text_color(50, 50, 50)
+            pdf.ln()
+
+        pdf.ln(6)
+        pdf.set_font("Arial", style='B', size=11)
+        pdf.set_text_color(26, 60, 94)
+        pdf.cell(0, 10, f"Total de usuários no relatório: {len(usuarios)}", ln=True, align='C')
+
+        pdf_path = "relatorio_usuarios_nao_buscam.pdf"
+        pdf.output(pdf_path)
+        return send_file(pdf_path, as_attachment=True, mimetype='application/pdf')
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
         cur.close()
