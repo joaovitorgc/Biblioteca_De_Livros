@@ -5,8 +5,7 @@ import FlashMessage from "../../components/FlashMessage/FlashMessage.jsx";
 import AdminUsuarios from "../AdminUsuarios/AdminUsuarios.jsx";
 
 // ─────────────────────────────────────────────
-// PERSONAGENS — adicione/remova aqui à vontade
-// Arquivos ficam em /public  (ex: /goku.png)
+// PERSONAGENS
 // ─────────────────────────────────────────────
 const PERSONAGENS = [
     { src: "/nuvem.png",    nome: "Kakaroto"    },
@@ -15,7 +14,7 @@ const PERSONAGENS = [
     { src: "/homelander.png", nome: "Homelander" }
 ];
 
-const TRAIL_COLORS_RIGHT = ["#fbbf24", "#fbbf24", "#fbbf24", "#fbbf24"];
+const TRAIL_COLORS_RIGHT = ["#fbbf24", "#c64d0e", "#fbbf24", "#cd1423"];
 const TRAIL_COLORS_LEFT  = ["#fbbf24", "#c64d0e", "#fbbf24", "#cd1423"];
 
 export default function Dashboard({ usuario }) {
@@ -27,6 +26,9 @@ export default function Dashboard({ usuario }) {
     const [trails, setTrails]         = useState([]);
     const [trailLines, setTrailLines] = useState([]);
 
+    // Novo estado para armazenar o nome do usuário logado
+    const [nomeUsuario, setNomeUsuario] = useState("");
+
     // Troca de personagem
     const [personagemIdx, setPersonagemIdx] = useState(0);
     const [trocando, setTrocando]           = useState(false); // fade entre personagens
@@ -37,14 +39,24 @@ export default function Dashboard({ usuario }) {
     const lastPosRef       = useRef(null);
     const trailIdRef       = useRef(0);
 
+
     useEffect(() => {
         const usuarioLogado = localStorage.getItem("usuario");
         if (!usuarioLogado) {
             navigate("/login", {
                 state: { mensagemLogout: "Acesso negado. Faça login para continuar!", tipo: "erro" }
             });
+        } else {
+            try {
+                const dadosUsuario = JSON.parse(usuarioLogado);
+                setNomeUsuario(dadosUsuario.nome || dadosUsuario.username || "Usuário");
+            } catch (e) {
+                setNomeUsuario(usuarioLogado); 
+            }
         }
     }, [navigate]);
+
+
 
     // ── Troca de personagem ao clicar ──
     const trocarPersonagem = useCallback(() => {
@@ -102,8 +114,6 @@ export default function Dashboard({ usuario }) {
 
     if (usuario?.tipo === 0) return <AdminUsuarios />;
 
-    const nomeCompleto = usuario?.nome || usuario?.name || usuario?.username || "";
-    const nomeUsuario  = nomeCompleto.split(" ")[0] || "Usuário";
     const personagem   = PERSONAGENS[personagemIdx];
     const multiPersonagem = PERSONAGENS.length > 1;
 
@@ -139,6 +149,7 @@ export default function Dashboard({ usuario }) {
                 <div className={`${css.speedLines} ${speedLines ? css.speedLinesActive : ""}`} />
 
                 <div className={css.content}>
+                    {/* O nome agora aparece dinamicamente aqui */}
                     <h1 className={css.titulo}>Olá, <span>{nomeUsuario}</span></h1>
                     <p className={css.subtitulo}>Escolha seu destino</p>
 
@@ -174,30 +185,31 @@ export default function Dashboard({ usuario }) {
 
                     {/* Cards */}
                     <div className={css.cards}>
-                        <div
-                            className={`${css.card} ${css.cardReservas}`}
-                            onClick={() => handleNavigate("/reservasUsuario", "left")}
-                            role="button" tabIndex={0}
-                            onKeyDown={e => e.key === "Enter" && handleNavigate("/reservasUsuario", "left")}
-                            aria-label="Ir para Minhas Reservas"
-                        >
-                            <div className={css.cardGlow} />
-                            <span className={css.cardIcon} aria-hidden="true">📋</span>
-                            <p className={css.cardTitle}>Reservas</p>
-                            <p className={css.cardSub}>Minhas solicitações</p>
-                        </div>
 
                         <div
                             className={`${css.card} ${css.cardAcervo}`}
-                            onClick={() => handleNavigate("/", "right")}
+                            onClick={() => handleNavigate("/", "left")}
                             role="button" tabIndex={0}
-                            onKeyDown={e => e.key === "Enter" && handleNavigate("/", "right")}
+                            onKeyDown={e => e.key === "Enter" && handleNavigate("/", "left")}
                             aria-label="Ir para o Acervo"
                         >
                             <div className={css.cardGlow} />
                             <span className={css.cardIcon} aria-hidden="true">📚</span>
                             <p className={css.cardTitle}>Acervo</p>
                             <p className={css.cardSub}>Explorar livros</p>
+                        </div>
+
+                        <div
+                            className={`${css.card} ${css.cardReservas}`}
+                            onClick={() => handleNavigate("/reservasUsuario", "right")}
+                            role="button" tabIndex={0}
+                            onKeyDown={e => e.key === "Enter" && handleNavigate("/reservasUsuario", "right")}
+                            aria-label="Ir para Minhas Reservas"
+                        >
+                            <div className={css.cardGlow} />
+                            <span className={css.cardIcon} aria-hidden="true">📋</span>
+                            <p className={css.cardTitle}>Reservas</p>
+                            <p className={css.cardSub}>Minhas solicitações</p>
                         </div>
                     </div>
                 </div>
