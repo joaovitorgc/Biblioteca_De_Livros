@@ -1,72 +1,388 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Rajdhani:wght@400;600;700&family=Montserrat:wght@600;700&display=swap');
 
 .container {
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: 'Montserrat', sans-serif;
-    background: #0f172a;
+    font-family: 'Rajdhani', sans-serif;
+    background: #0a0e1a;
     color: white;
     position: relative;
     overflow: hidden;
 }
 
-.blur1, .blur2 {
+/* ── Blurs de fundo ── */
+.blur1, .blur2, .blur3 {
     position: absolute;
-    width: 300px;
-    height: 300px;
     border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0.6;
+    filter: blur(130px);
+    pointer-events: none;
 }
-
 .blur1 {
-    background: #3b82f6;
-    top: -50px;
-    left: -50px;
+    width: 420px;
+    height: 420px;
+    background: #1a56e8;
+    opacity: 0.25;
+    top: -80px;
+    left: -80px;
 }
-
 .blur2 {
-    background: #9333ea;
-    bottom: -50px;
-    right: -50px;
+    width: 360px;
+    height: 360px;
+    background: #7c3aed;
+    opacity: 0.22;
+    bottom: -60px;
+    right: -60px;
+}
+.blur3 {
+    width: 280px;
+    height: 280px;
+    background: #f59e0b;
+    opacity: 0.08;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
+/* ── Grade de estrelas ── */
+.stars {
+    position: absolute;
+    inset: 0;
+    background-image:
+            radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+            radial-gradient(1px 1px at 30% 50%, rgba(255,255,255,0.4) 0%, transparent 100%),
+            radial-gradient(1px 1px at 60% 15%, rgba(255,255,255,0.5) 0%, transparent 100%),
+            radial-gradient(1px 1px at 80% 70%, rgba(255,255,255,0.6) 0%, transparent 100%),
+            radial-gradient(1px 1px at 45% 80%, rgba(255,255,255,0.3) 0%, transparent 100%),
+            radial-gradient(1px 1px at 90% 35%, rgba(255,255,255,0.5) 0%, transparent 100%),
+            radial-gradient(1px 1px at 20% 90%, rgba(255,255,255,0.4) 0%, transparent 100%),
+            radial-gradient(1.5px 1.5px at 70% 40%, rgba(255,255,255,0.7) 0%, transparent 100%),
+            radial-gradient(1px 1px at 5% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+            radial-gradient(1px 1px at 55% 55%, rgba(255,255,255,0.3) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── Linha de velocidade (aparece no voo) ── */
+.speedLines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 0.15s;
+    background: repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 60px,
+            rgba(255,255,255,0.04) 60px,
+            rgba(255,255,255,0.04) 62px
+    );
+}
+.speedLinesActive {
+    opacity: 1;
+    animation: speedPulse 0.1s linear infinite;
+}
+@keyframes speedPulse {
+    0%   { background-position-x: 0; }
+    100% { background-position-x: -62px; }
+}
+
+/* ── Conteúdo central ── */
 .content {
     text-align: center;
     z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
 }
 
 .titulo {
-    font-size: 42px;
-    font-weight: 700;
-    margin-bottom: 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 38px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin: 0 0 4px;
+    line-height: 1.1;
 }
-
 .titulo span {
-    background: linear-gradient(135deg, #3b82f6, #9333ea);
+    background: linear-gradient(120deg, #60a5fa, #a78bfa, #f472b6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .subtitulo {
-    color: #94a3b8;
-    margin-bottom: 30px;
+    color: #64748b;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 0 0 32px;
 }
 
-
-.illustration img {
-    width: 280px;
-    opacity: 0.9;
-    animation: float 3s ease-in-out infinite;
+/* ── Personagem / nuvem ── */
+.gokuWrap {
+    position: relative;
+    width: 220px;
+    height: 200px;
+    margin: 0 auto 32px;
+    user-select: none;
 }
 
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
+/* Só mostra cursor de clique quando há múltiplos personagens */
+.gokuWrapClickable {
+    cursor: pointer;
+}
+.gokuWrapClickable:hover .gokuImg {
+    filter: drop-shadow(0 8px 48px rgba(167,139,250,0.6)) drop-shadow(0 0 24px rgba(251,191,36,0.4));
+}
+
+.gokuImg {
+    width: 220px;
+    height: 180px;
+    object-fit: contain;
+    object-position: center bottom;
+    filter: drop-shadow(0 8px 32px rgba(96,165,250,0.35));
+    animation: floatGoku 3s ease-in-out infinite;
+    transition: filter 0.3s, opacity 0.22s ease, transform 0.22s ease;
+    position: relative;
+    z-index: 2;
+}
+
+/* Fade suave na troca de personagem */
+.personagemFadeOut {
+    opacity: 0;
+    transform: scale(0.88);
+}
+.personagemFadeIn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Badge com nome + indicadores */
+.personagemBadge {
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    z-index: 3;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.personagemDots {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    transition: background 0.3s, transform 0.3s;
+}
+.dotAtivo {
+    background: rgba(167,139,250,0.85);
+    transform: scale(1.4);
+}
+
+@keyframes floatGoku {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50%       { transform: translateY(-14px) rotate(2deg); }
+}
+
+/* Aura pulsante ao redor do Goku */
+.aura {
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(167,139,250,0.15) 0%, transparent 70%);
+    animation: auraPulse 2.5s ease-in-out infinite;
+    z-index: 1;
+}
+@keyframes auraPulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50%       { opacity: 1;   transform: scale(1.12); }
+}
+
+/* ── Cards de destino ── */
+.cards {
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.card {
+    position: relative;
+    width: 180px;
+    padding: 20px 18px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1),
+    border-color 0.25s,
+    background 0.25s;
+    text-align: center;
+}
+.card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+/* Reservas – gradiente azul */
+.cardReservas::before {
+    background: linear-gradient(135deg, rgba(59,130,246,0.18), rgba(139,92,246,0.1));
+}
+.cardReservas:hover {
+    border-color: rgba(96,165,250,0.55);
+    background: rgba(59,130,246,0.08);
+    transform: translateY(-6px) scale(1.04);
+}
+.cardReservas:hover::before { opacity: 1; }
+.cardReservas .cardIcon { color: #60a5fa; }
+.cardReservas .cardGlow { background: rgba(96,165,250,0.35); }
+
+/* Acervo – gradiente âmbar */
+.cardAcervo::before {
+    background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(239,68,68,0.1));
+}
+.cardAcervo:hover {
+    border-color: rgba(251,191,36,0.55);
+    background: rgba(245,158,11,0.07);
+    transform: translateY(-6px) scale(1.04);
+}
+.cardAcervo:hover::before { opacity: 1; }
+.cardAcervo .cardIcon { color: #fbbf24; }
+.cardAcervo .cardGlow { background: rgba(251,191,36,0.35); }
+
+/* Glow por baixo do card */
+.cardGlow {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 40px;
+    filter: blur(18px);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.card:hover .cardGlow { opacity: 0.8; }
+
+.cardIcon {
+    font-size: 32px;
+    margin-bottom: 10px;
+    display: block;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.card:hover .cardIcon { transform: scale(1.2) rotate(-6deg); }
+
+.cardTitle {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+}
+.cardSub {
+    font-size: 11px;
+    color: #475569;
+    letter-spacing: 0.5px;
+}
+
+/* ── Animação de voo ── */
+@keyframes flyRight {
+    0%   { transform: translateX(0) translateY(0) scale(1) rotate(-2deg); opacity: 1; }
+    20%  { transform: translateX(40px) translateY(-30px) scale(1.15) rotate(10deg); opacity: 1; }
+    80%  { transform: translateX(300px) translateY(-120px) scale(0.6) rotate(20deg); opacity: 0.5; }
+    100% { transform: translateX(600px) translateY(-200px) scale(0.1) rotate(30deg); opacity: 0; }
+}
+@keyframes flyLeft {
+    0%   { transform: translateX(0) translateY(0) scale(1) rotate(-2deg); opacity: 1; }
+    20%  { transform: translateX(-40px) translateY(-30px) scale(1.15) rotate(-10deg); opacity: 1; }
+    80%  { transform: translateX(-300px) translateY(-120px) scale(0.6) rotate(-20deg); opacity: 0.5; }
+    100% { transform: translateX(-600px) translateY(-200px) scale(0.1) rotate(-30deg); opacity: 0; }
+}
+
+.flyRight {
+    animation: flyRight 0.75s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+}
+.flyLeft {
+    animation: flyLeft 0.75s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+}
+
+/* Flash de transição */
+.flashOverlay {
+    position: fixed;
+    inset: 0;
+    background: white;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0;
+    transition: none;
+}
+.flashIn {
+    animation: flashAnim 0.6s ease-in forwards;
+}
+@keyframes flashAnim {
+    0%   { opacity: 0; }
+    50%  { opacity: 0.85; }
+    100% { opacity: 1; }
+}
+
+/* ── Rastro de cometa ── */
+.trailDot {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9;
+    transform: translate(-50%, -50%);
+    animation: trailFade 0.7s ease-out forwards;
+}
+@keyframes trailFade {
+    0%   { opacity: 0.95; transform: translate(-50%, -50%) scale(1); }
+    60%  { opacity: 0.4;  transform: translate(-50%, -50%) scale(0.6); }
+    100% { opacity: 0;    transform: translate(-50%, -50%) scale(0.05); }
+}
+
+/* Linha de rastro persistente que aparece atrás do Goku */
+.trailLine {
+    position: fixed;
+    height: 3px;
+    border-radius: 3px;
+    pointer-events: none;
+    z-index: 8;
+    top: 0;
+    left: 0;
+    transform-origin: left center;
+    animation: trailLineFade 0.9s ease-out forwards;
+}
+@keyframes trailLineFade {
+    0%   { opacity: 0.7; }
+    100% { opacity: 0; }
 }

@@ -1791,6 +1791,9 @@ def pagar_multa(id_emprestimo):
         cur.close()
 
 
+
+
+
 # ─────────────────────────────────────────
 # RELATÓRIO 1 — Livros mais emprestados
 # ─────────────────────────────────────────
