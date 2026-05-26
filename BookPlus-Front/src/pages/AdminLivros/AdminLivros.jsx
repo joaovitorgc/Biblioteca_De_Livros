@@ -81,7 +81,7 @@ export default function AdminLivros() {
                 });
             const dados = await resposta.json();
 
-            setTotalEmprestimos(dados.emprestimos.length);
+            setTotalEmprestimos((dados.emprestimos || []).length);
         } catch (erro) {
             console.log(erro);
 

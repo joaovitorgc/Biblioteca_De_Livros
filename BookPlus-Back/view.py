@@ -12,6 +12,8 @@ from funcao import enviando_email
 from flask import make_response
 from flask import jsonify
 from funcao import gerar_token
+from funcao import email_reserva_confirmada
+from funcao import email_multa_atraso
 
 import qrcode
 import base64
@@ -1005,6 +1007,25 @@ def realizar_emprestimo():
 
         con.commit()
 
+        cursor.execute("SELECT email, nome FROM USUARIOS WHERE ID_USUARIO = ?", (id_usuario,))
+        dados_usuario = cursor.fetchone()
+        email = dados_usuario[0]
+        nome = dados_usuario[1]
+
+        cursor.execute("SELECT TITULO FROM LIVRO WHERE ID_LIVRO = ?", (id_livro,))
+        titulo = cursor.fetchone()[0]
+
+        threading.Thread(
+            target=email_reserva_confirmada,
+            args=(
+                email,
+                nome,
+                titulo,
+                data_limite_reserva.strftime("%d/%m/%Y às %H:%M")
+            ),
+            daemon=True
+        ).start()
+
         return jsonify({
 
             "erro": False,
@@ -1297,120 +1318,107 @@ def devolver_livro(id_emprestimo):
     try:
 
         cur.execute("""
-
             SELECT
                 ID_LIVRO,
                 STATUS,
                 DATA_DEVOLUCAO_PREVISTA
-
             FROM EMPRESTIMOS
-
             WHERE ID_EMPRESTIMO = ?
-
         """, (id_emprestimo,))
 
         emprestimo = cur.fetchone()
 
         if not emprestimo:
-
             return jsonify({
                 "erro": True,
                 "mensagem": "Reserva não encontrada."
             }), 404
 
         id_livro = emprestimo[0]
-
         status = emprestimo[1]
-
         data_devolucao_prevista = emprestimo[2]
 
         if status != "RETIRADO":
-
             return jsonify({
                 "erro": True,
-                "mensagem":
-                    "O livro ainda não foi retirado."
+                "mensagem": "O livro ainda não foi retirado."
             }), 400
 
         data_atual = datetime.now().date()
-
         multa = 0
-
         dias_atraso = 0
 
         if data_devolucao_prevista and data_atual > data_devolucao_prevista:
-
-            dias_atraso = (
-                data_atual - data_devolucao_prevista
-            ).days
-
+            dias_atraso = (data_atual - data_devolucao_prevista).days
             multa = 10
-
             multa += 10 * (0.01 * dias_atraso)
-
             multa = round(multa, 2)
 
         cur.execute("""
-
             UPDATE EMPRESTIMOS
-
             SET
                 STATUS = 'DEVOLVIDO',
                 DATA_DEVOLUCAO_REAL = CURRENT_DATE,
                 MULTA = ?
-
             WHERE ID_EMPRESTIMO = ?
-
-        """, (
-            multa,
-            id_emprestimo
-        ))
+        """, (multa, id_emprestimo))
 
         cur.execute("""
-
             UPDATE LIVRO
-
             SET ESTOQUE = ESTOQUE + 1
-
             WHERE ID_LIVRO = ?
-
         """, (id_livro,))
 
         con.commit()
 
-        mensagem = "Livro devolvido com sucesso."
-
         if multa > 0:
+            cur.execute("""
+                SELECT u.EMAIL, u.NOME, l.TITULO
+                FROM EMPRESTIMOS e
+                INNER JOIN USUARIOS u ON u.ID_USUARIO = e.ID_USUARIO
+                INNER JOIN LIVRO l ON l.ID_LIVRO = e.ID_LIVRO
+                WHERE e.ID_EMPRESTIMO = ?
+            """, (id_emprestimo,))
+            dados = cur.fetchone()
 
-            mensagem += (
-                f" Multa por atraso: "
-                f"R$ {multa:.2f} "
-                f"({dias_atraso} dias de atraso)."
+            payload_pix = gerar_payload_pix(
+                chave="50625936892",
+                nome="BOOKPLUS",
+                cidade="BIRIGUI",
+                valor=float(multa),
+                txid=f"BOOK{id_emprestimo}"
             )
 
+            qr = qrcode.make(payload_pix)
+            buffer = BytesIO()
+            qr.save(buffer, format="PNG")
+            qr_bytes = buffer.getvalue()  # <- bytes puros, não base64
+
+            threading.Thread(
+                target=email_multa_atraso,
+                args=(dados[0], dados[1], dados[2], dias_atraso, multa, qr_bytes, payload_pix),
+                daemon=True
+            ).start()
+
+        mensagem = "Livro devolvido com sucesso."
+        if multa > 0:
+            mensagem += f" Multa por atraso: R$ {multa:.2f} ({dias_atraso} dias de atraso)."
+
         return jsonify({
-
             "erro": False,
-
             "mensagem": mensagem,
-
             "multa": multa,
-
             "dias_atraso": dias_atraso
-
         })
 
     except Exception as e:
-
         con.rollback()
-
         return jsonify({
             "erro": True,
             "mensagem": str(e)
         }), 500
 
     finally:
-
         cur.close()
 
 
